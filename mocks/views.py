@@ -1,37 +1,69 @@
-# mocks/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import MockEndpoint
+
 from helpers import auth_utils
+from .models import MockEndpoint
 
 
 class MockServiceView(APIView):
-    def dispatch(self, request, *args, **kwargs):
-        service_base = kwargs.get("service_base")  # e.g. banking
-        endpoint_path = kwargs.get("endpoint_path")  # e.g. accounts
+    """
+    Dynamically handles GET, POST, PUT, DELETE, etc. requests
+    for mocked services.
+    """
 
+    permission_classes = []
+    authentication_classes = []
+
+    @staticmethod
+    def _invalid_path_response():
+        err = {
+            "code": "IPR404",
+            "message": "Invalid path, Check endpoints",
+            "lang": "en",
+            "data": {}
+        }
+        return Response(err, status=status.HTTP_404_NOT_FOUND)
+
+    def handle_request(self, request, service_base=None, endpoint_path=None, *args, **kwargs):
+        # Clean input paths
+        if service_base:
+            service_base = str(service_base).strip('/').strip()
+        if endpoint_path:
+            endpoint_path = str(endpoint_path).strip('/').strip()
+
+        print('service_base:', service_base)
+        print('endpoint_path:', endpoint_path)
+
+        # check endpoints
         try:
             endpoint = MockEndpoint.objects.get(
-                service__base_path=f"/{service_base}",
-                path=f"/{endpoint_path}",
+                service__base_path=service_base,
+                path=endpoint_path,
                 method=request.method
             )
         except MockEndpoint.DoesNotExist:
-            return Response({"error": "Not found"}, status=status.HTTP_404_NOT_FOUND)
+            return self._invalid_path_response()
 
-        # 🔹 Auth check (delegated to auth_utils)
+        # handle auth
         auth_error = auth_utils.check_auth(request, endpoint)
         if auth_error:
             return auth_error
 
-        # 🔹 Match request data to rules
-        req_data = request.query_params.dict()
-        if request.data:
-            req_data.update(request.data)
+        return Response(endpoint.default_response, status=endpoint.default_http_status)
 
-        for rule in endpoint.rules.all():
-            if req_data.get(rule.condition_field) == rule.condition_value:
-                return Response(rule.response_body, status=rule.response_code)
+    # Dynamically route all HTTP methods to handle_request
+    def get(self, request, *args, **kwargs):
+        return self.handle_request(request, *args, **kwargs)
 
-        return Response({"error": "No matching rule"}, status=404)
+    def post(self, request, *args, **kwargs):
+        return self.handle_request(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.handle_request(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.handle_request(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.handle_request(request, *args, **kwargs)

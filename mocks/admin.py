@@ -66,4 +66,4 @@ class JWTAuthConfigAdmin(admin.ModelAdmin):
 
 @admin.register(ApiKeyAuthConfig)
 class ApiKeyAuthConfigAdmin(admin.ModelAdmin):
-    list_display = ("id", "endpoint", "header_name", "key_value")
+    list_display = ("id", "endpoint", "add_to", "key_name", "key_value")

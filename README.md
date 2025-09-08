@@ -21,13 +21,3 @@ pip install -r requirements.txt
 
 ```python manage.py migrate```
 
-run this command in Django shell.
-```
-from back_office_user.models import Permission, Role, BackOfficeUser
-from common.models import UCBBranch
-permission = Permission.objects.create(name="Can Create User",code="can_create_user", is_active=True)
-role = Role.objects.create(name="super_user")
-role.permission.add(permission)
-branch = UCBBranch.objects.create(branch_code="123456789", branch_name="Head Office")
-```
-### Then run : createsuperuser
