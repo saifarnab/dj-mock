@@ -55,12 +55,25 @@ class MockEndpoint(models.Model):
                                  default="none")
 
     def __str__(self):
-        return f'{self.service.name}:{self.service.base_path}/{self.path}'
+        return f'MockEndpoint:{self.service.base_path}/{self.path}'
 
 
 class MockRule(models.Model):
+    REQUEST_SOURCES = [
+        ("PAYLOAD", "PAYLOAD"),
+        ("QUERY_PARAMS", "QUERY PARAMS")
+    ]
+    DATA_FORMAT = [
+        ("JSON", "JSON"),
+        ("XML", "XML")
+    ]
     endpoint = models.ForeignKey(MockEndpoint, on_delete=models.CASCADE, related_name="rules")
+    request_source = models.CharField(max_length=50, choices=REQUEST_SOURCES, null=False, blank=False)
+    data_format = models.CharField(max_length=50, choices=DATA_FORMAT, null=False, blank=False)
     condition_field = models.CharField(max_length=100)
     condition_value = models.CharField(max_length=100)
     response_body = models.JSONField()
     response_code = models.IntegerField(default=200)
+
+    def __str__(self):
+        return f'MockRule:{self.endpoint.service.base_path}/{self.endpoint.path}'
