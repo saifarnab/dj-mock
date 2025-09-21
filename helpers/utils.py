@@ -1,3 +1,6 @@
+import time
+
+
 def json_value_by_key(data, target_key):
     """
     Recursively search for a key in a nested dictionary.
@@ -26,3 +29,7 @@ def xml_value_by_tag(element, target_tag):
         if result is not None:
             return result
     return None
+
+
+def demo():
+    time.sleep(1111)

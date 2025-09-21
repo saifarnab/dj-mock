@@ -9,6 +9,8 @@ from django.urls.conf import include
 
 urlpatterns = [
     path("mock-api/i/admin/", admin.site.urls),
+    path("mock-api/e/account/", include('accounts.urls')),
+    path("mock-api/e/dashboard/", include('dashboard.urls')),
     path("mock-api/e/", include('mocks.urls')),
 
 ]

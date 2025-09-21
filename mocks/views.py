@@ -5,6 +5,7 @@ from rest_framework_xml.parsers import XMLParser
 from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 
 from helpers import auth_utils, utils
+from helpers.utils import demo
 from .models import MockEndpoint, MockRule
 
 
@@ -30,6 +31,7 @@ class MockServiceView(APIView):
 
     def handle_request(self, request, service_base=None, endpoint_path=None, *args, **kwargs):
         # Clean input paths
+
         if service_base:
             service_base = str(service_base).strip('/').strip()
         if endpoint_path:
