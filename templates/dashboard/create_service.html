@@ -11,21 +11,24 @@
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
-                <!-- Left side -->
-                <h4 class="card-title mb-0">Select Service</h4>
-                <!-- Right side -->
-                <h4 class="btn btn-success"><a>Create New Service</a></h4>
-            </div>
+                    <h4 class="card-title mb-0">New Service</h4>
+                </div>
                 <p class="card-description"></p>
-                <form class="forms-sample" action="{% url 'service_list' %}" method="post">
+                <form class="forms-sample" action="{% url 'create_service' %}" method="post">
                     {% csrf_token %}
                     <div class="form-group">
-                        <select class="form-select" id="exampleSelectGender" name="service_id">
-                            {% for service in services %}
-                            <option value="{{ service.id }}"
-                                    {% if service.id|stringformat:"s" == selected_service_id %}selected{% endif %}>{{ service.name }}
-                            </option>
-                            {% endfor %}
+                        <label for="serviceName">Name</label>
+                        <input type="text" class="form-control" id="serviceName" name="serviceName" placeholder="Name" minlength="3" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="baseUrl">Base URL</label>
+                        <input type="text" class="form-control" id="baseUrl" name="baseUrl" placeholder="Base URL" minlength="3" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="1"> Active</option>
+                            <option value="0"> Inactive</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
@@ -34,5 +37,8 @@
         </div>
     </div>
 </div>
+
+
+{% include 'includes/notify_modal.html' with name=messages %}
 
 {% endblock %}

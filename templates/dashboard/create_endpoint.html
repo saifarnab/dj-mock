@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="page-header">
+    {% include 'includes/page_header.html' with name=Dashboard %}
+</div>
+
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">New Endpoint</h4>
+                </div>
+                <p class="card-description"></p>
+                <form class="forms-sample" action="{% url 'create_service' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="serviceId">Service</label>
+                        <select class="form-select" id="serviceId" name="serviceId">
+                            {% for service in services %}
+                            <option value="{{ service.id }}"
+                                    {% if service.id|stringformat:"s" == selected_service_id %}selected{% endif %}>{{ service.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="endpoint">Endpoint</label>
+                        <input type="text" class="form-control" id="endpoint" name="endpoint" placeholder="Endpoint"
+                               minlength="3" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="http_method">HTTP Method</label>
+                        <select class="form-select" id="http_method" name="http_method">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="PATCH">PATCH</option>
+                            <option value="DELETE">DELETE</option>
+                            <option value="HEAD">HEAD</option>
+                            <option value="OPTIONS">OPTIONS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="auth_type">Auth Type</label>
+                        <select class="form-select" id="auth_type" name="auth_type">
+                            <option value="none">None</option>
+                            <option value="basic">Basic</option>
+                            <option value="api_key">API Key</option>
+                            <option value="jwt">JWT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="default_status">Default Status</label>
+                        <select class="form-select" id="default_status" name="default_status">
+                            <option value="200">200</option>
+                            <option value="201">201</option>
+                            <option value="400">400</option>
+                            <option value="403">403</option>
+                            <option value="500">500</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="default_response">Default JSON Response</label>
+                        <textarea class="form-control" id="default_response" name="default_response" rows="10" placeholder="Enter default JSON response"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="1"> Active</option>
+                            <option value="0"> Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'includes/notify_modal.html' with name=messages %}
+
+{% endblock %}

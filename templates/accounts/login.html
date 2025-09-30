@@ -53,50 +53,7 @@
 
 
 
-<!-- Django Messages in Bootstrap Modal -->
-{% if messages %}
-<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-top-custom">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="messageModalLabel">Notification</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} mb-2">
-                {{ message }}
-            </div>
-        {% endfor %}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<style>
-  /* Custom class to move modal near top */
-  .modal-top-custom {
-    display: flex;
-    align-items: flex-start; /* push to top */
-    margin-top: 2rem;        /* spacing from top */
-  }
-</style>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    var modalElement = document.getElementById('messageModal');
-    var messageModal = new bootstrap.Modal(modalElement);
-    messageModal.show();
-  });
-</script>
-{% endif %}
-
-<!-- End Modal -->
-
-
+{% include 'includes/notify_modal.html' with name=messages %}
 {% include 'includes/login_scripts.html' %}
 </body>
 </html>

@@ -44,18 +44,43 @@ def service_list_view(request):
 def create_service_view(request):
     user = User.objects.get(username='sma')
     services = MockService.objects.get_services_by_user(user)
-    selected_service_id = None
 
     if request.method == "POST":
-        selected_service_id = request.POST.get("service_id")
-        endpoints = MockEndpoint.objects.get_service_endpoints(selected_service_id)
-    else:
-        endpoints = MockEndpoint.objects.get_most_hit_endpoints()
+        service_name = str(request.POST.get("serviceName")).strip()
+        base_url = str(request.POST.get("baseUrl")).strip()
+        status = True if request.POST.get("status") == "1" else False
+
+        if MockService.objects.check_service_by_name(service_name):
+            messages.error(request, "Service name already available")
+            return render(request, 'dashboard/create_service.html', {})
+
+        if MockService.objects.check_service_by_url(base_url):
+            return render(request, 'dashboard/create_service.html', {})
+
+        new_service = MockService.objects.create_new_service(user, service_name, base_url, status)
+        endpoints = MockEndpoint.objects.get_service_endpoints(new_service.id)
+
+        context = {
+            'services': services,
+            'endpoints': endpoints,
+            'selected_service_id': new_service.id,
+
+        }
+
+        return render(request, 'dashboard/services.html', context)
+
+    return render(request, 'dashboard/create_service.html', {})
+
+
+def create_endpoint_view(request):
+    user = User.objects.get(username='sma')
+    services = MockService.objects.get_services_by_user(user)
+
+    if request.method == "POST":
+        pass
 
     context = {
-        'services': services,
-        'endpoints': endpoints,
-        'selected_service_id': selected_service_id,
-
+        'services': services
     }
-    return render(request, 'dashboard/create_service.html', context)
+
+    return render(request, 'dashboard/create_endpoint.html', context)
