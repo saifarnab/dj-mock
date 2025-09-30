@@ -1,0 +1,43 @@
+{% load static %}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Service</th>
+        <th>Service URL</th>
+        <th>Endpoint</th>
+        <th>Created Date</th>
+        <th>Total Hit</th>
+        <th>Status</th>
+        {% if edit %}
+        <th>Action</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for endpoint in endpoints %}
+    <tr>
+        <td>{{ endpoint.service.name }}</td>
+        <td>/{{ endpoint.service.base_path }}</td>
+        <td>/{{ endpoint.path }}/</td>
+        <td>{{ endpoint.created_at }}</td>
+        <td>{{ endpoint.hit_count }}</td>
+        <td>
+            {% if endpoint.is_active %}
+            <label class="badge badge-gradient-success">ACTIVE</label>
+            {% else %}
+            <label class="badge badge-gradient-danger">INACTIVE</label>
+            {% endif %}
+        </td>
+        {% if edit %}
+        <td>
+            <a class="btn btn-light btn-sm p-1 rounded-circle" title="Edit">
+                <i class="fa fa-edit" style="font-size: 0.99rem; color: #333;"></i>
+            </a>
+        </td>
+        {% endif %}
+
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

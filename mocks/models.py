@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from mocks import managers
+
 
 class BasicAuthConfig(models.Model):
     endpoint = models.OneToOneField("MockEndpoint", on_delete=models.CASCADE, related_name="basic_auth")
@@ -26,10 +28,15 @@ class ApiKeyAuthConfig(models.Model):
 
 
 class MockService(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="services")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="users")
     name = models.CharField(max_length=100, unique=True, null=False, blank=False)
     base_path = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    is_delete = models.BooleanField(default=False)
+
+    objects = managers.MockServiceManager()
 
     def __str__(self):
         return self.name
@@ -53,6 +60,13 @@ class MockEndpoint(models.Model):
     auth_type = models.CharField(max_length=20,
                                  choices=[("none", "None"), ("basic", "Basic"), ("api_key", "Api Key"), ("jwt", "JWT")],
                                  default="none")
+    hit_count = models.BigIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    is_delete = models.BooleanField(default=False)
+
+    objects = managers.MockEndpointManager()
 
     def __str__(self):
         return f'MockEndpoint:{self.service.base_path}/{self.path}'
