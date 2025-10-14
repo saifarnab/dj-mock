@@ -28,7 +28,7 @@
                         <select class="form-select" id="exampleSelectGender" name="service_id">
                             {% for service in services %}
                             <option value="{{ service.id }}"
-                                    {% if service.id|stringformat:"s" == selected_service_id %}selected{% endif %}>{{ service.name }}
+                                    {% if service.id == selected_service_id %}selected{% endif %}>{{ service.name }}
                             </option>
                             {% endfor %}
                         </select>

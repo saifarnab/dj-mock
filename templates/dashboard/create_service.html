@@ -18,17 +18,19 @@
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="serviceName">Name</label>
-                        <input type="text" class="form-control" id="serviceName" name="serviceName" placeholder="Name" minlength="3" required>
+                        <input type="text" class="form-control" id="serviceName" name="serviceName" placeholder="Name"
+                               minlength="3" value="{{ form_data.serviceName|default_if_none:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label for="baseUrl">Base URL</label>
-                        <input type="text" class="form-control" id="baseUrl" name="baseUrl" placeholder="Base URL" minlength="3" required>
+                        <input type="text" class="form-control" id="baseUrl" name="baseUrl" placeholder="Base URL"
+                               minlength="3" value="{{ form_data.baseUrl|default_if_none:'' }}" required>
                     </div>
                     <div class="form-group">
                         <label for="status">Status</label>
                         <select class="form-select" id="status" name="status">
-                            <option value="1"> Active</option>
-                            <option value="0"> Inactive</option>
+                            <option value="1" {% if form_data.status == '1' %}selected{% endif %}>Active</option>
+                            <option value="0" {% if form_data.status == '0' %}selected{% endif %}>Inactive</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>

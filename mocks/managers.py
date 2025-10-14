@@ -15,6 +15,14 @@ class MockEndpointManager(models.Manager):
     def get_total_endpoints_hit_count(self):
         return self.all().aggregate(total=Sum('hit_count'))['total']
 
+    def check_endpoint_existence(self, service_id, url):
+        return self.filter(service__id=service_id, path=url).exists()
+
+    def create_new_endpoint(self, service, end_point, http_method, auth_type, default_http_status, default_response,
+                            status):
+        return self.create(service=service, path=end_point, method=http_method, default_http_status=default_http_status,
+                           default_response=default_response, auth_type=auth_type, is_active=status)
+
 
 class MockServiceManager(models.Manager):
     def get_total_service_count(self):
@@ -29,8 +37,8 @@ class MockServiceManager(models.Manager):
     def check_service_by_name(self, name):
         return self.filter(name=name).exists()
 
-    def check_service_by_url(self, url):
-        return self.filter(base_url=url).exists()
+    def check_service_url_existence(self, url):
+        return self.filter(base_path=url).exists()
 
-    def get_services(self, service_id):
-        return self.filter()
+    def get_service(self, service_id, user):
+        return self.filter(user=user, id=service_id).last()

@@ -2,6 +2,7 @@
 {% block content %}
 {% load static %}
 
+
 <div class="page-header">
     {% include 'includes/page_header.html' with name=Dashboard %}
 </div>
@@ -14,26 +15,28 @@
                     <h4 class="card-title mb-0">New Endpoint</h4>
                 </div>
                 <p class="card-description"></p>
-                <form class="forms-sample" action="{% url 'create_service' %}" method="post">
+                <form class="forms-sample" action="{% url 'create_endpoint' %}" method="post">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="serviceId">Service</label>
-                        <select class="form-select" id="serviceId" name="serviceId">
+                        <label for="serviceID">Service</label>
+                        <select class="form-select" id="serviceID" name="serviceID" required>
                             {% for service in services %}
                             <option value="{{ service.id }}"
-                                    {% if service.id|stringformat:"s" == selected_service_id %}selected{% endif %}>{{ service.name }}
+                                    {% if service.id|stringformat:"s" == selected_service_id %}selected{% endif %}>
+                            {{ service.name }}
                             </option>
                             {% endfor %}
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label for="endpoint">Endpoint</label>
-                        <input type="text" class="form-control" id="endpoint" name="endpoint" placeholder="Endpoint"
+                        <input type="text" class="form-control" id="endpoint" name="endPoint" placeholder="Endpoint"
                                minlength="3" required>
                     </div>
                     <div class="form-group">
                         <label for="http_method">HTTP Method</label>
-                        <select class="form-select" id="http_method" name="http_method">
+                        <select class="form-select" id="http_method" name="httpMethod">
                             <option value="GET">GET</option>
                             <option value="POST">POST</option>
                             <option value="PUT">PUT</option>
@@ -45,7 +48,7 @@
                     </div>
                     <div class="form-group">
                         <label for="auth_type">Auth Type</label>
-                        <select class="form-select" id="auth_type" name="auth_type">
+                        <select class="form-select" id="auth_type" name="authType">
                             <option value="none">None</option>
                             <option value="basic">Basic</option>
                             <option value="api_key">API Key</option>
@@ -54,7 +57,7 @@
                     </div>
                     <div class="form-group">
                         <label for="default_status">Default Status</label>
-                        <select class="form-select" id="default_status" name="default_status">
+                        <select class="form-select" id="default_status" name="defaultHttpStatus">
                             <option value="200">200</option>
                             <option value="201">201</option>
                             <option value="400">400</option>
@@ -64,7 +67,8 @@
                     </div>
                     <div class="form-group">
                         <label for="default_response">Default JSON Response</label>
-                        <textarea class="form-control" id="default_response" name="default_response" rows="10" placeholder="Enter default JSON response"></textarea>
+                        <textarea class="form-control" id="default_response" name="defaultResponse" rows="10"
+                                  placeholder="Enter default JSON response"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="status">Status</label>
