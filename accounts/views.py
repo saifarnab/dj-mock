@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
+from django.contrib.auth import logout
 
 
 def login_view(request):
@@ -15,6 +16,11 @@ def login_view(request):
         else:
             messages.error(request, "Invalid credentials")
     return render(request, 'accounts/login.html')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
 
 
 def register_view(request):

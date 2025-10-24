@@ -4,29 +4,6 @@ from django.contrib.auth.models import User
 from mocks import managers
 
 
-class BasicAuthConfig(models.Model):
-    endpoint = models.OneToOneField("MockEndpoint", on_delete=models.CASCADE, related_name="basic_auth")
-    username = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
-
-
-class JWTAuthConfig(models.Model):
-    endpoint = models.OneToOneField("MockEndpoint", on_delete=models.CASCADE, related_name="jwt_auth")
-    auth_header = models.CharField(null=False, blank=False, default="Bearer")
-    token = models.TextField(null=False, blank=False)
-
-
-class ApiKeyAuthConfig(models.Model):
-    ADD_TO = [
-        ("header", "Header"),
-        ("query_params", "Query Params")
-    ]
-    endpoint = models.OneToOneField("MockEndpoint", on_delete=models.CASCADE, related_name="apikey_auth")
-    add_to = models.CharField(max_length=50, choices=ADD_TO, null=False, blank=False)
-    key_name = models.CharField(max_length=100, default="API_KEY")
-    key_value = models.CharField(max_length=255)
-
-
 class MockService(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="users")
     name = models.CharField(max_length=100, unique=True, null=False, blank=False)
@@ -53,6 +30,7 @@ class MockEndpoint(models.Model):
         ("OPTIONS", "OPTIONS"),
     ]
     service = models.ForeignKey(MockService, on_delete=models.CASCADE, related_name="endpoints")
+    endpoint_name = models.CharField(max_length=255)
     path = models.CharField(max_length=255)
     method = models.CharField(max_length=10, choices=HTTP_METHOD_CHOICES)
     default_response = models.JSONField(null=False, blank=False)
@@ -72,6 +50,57 @@ class MockEndpoint(models.Model):
         return f'MockEndpoint:{self.service.base_path}/{self.path}'
 
 
+class BasicAuthConfig(models.Model):
+    service = models.OneToOneField("MockService", on_delete=models.CASCADE, related_name="basic_auth")
+    username = models.CharField(max_length=100)
+    password = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    is_delete = models.BooleanField(default=False)
+
+    objects = managers.BasicAuthConfigManager()
+
+    def __str__(self):
+        return self.username
+
+
+class JWTAuthConfig(models.Model):
+    service = models.OneToOneField("MockService", on_delete=models.CASCADE, related_name="jwt_auth")
+    auth_header = models.CharField(null=False, blank=False, default="Bearer")
+    token = models.TextField(null=False, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    is_delete = models.BooleanField(default=False)
+
+    objects = managers.JWTAuthConfigManager()
+
+    def __str__(self):
+        return f"{self.auth_header}-{self.service.name}"
+
+
+class ApiKeyAuthConfig(models.Model):
+    ADD_TO = [
+        ("header", "Header"),
+        ("query_params", "Query Params"),
+        ("body", "Body")
+    ]
+    service = models.OneToOneField("MockService", on_delete=models.CASCADE, related_name="api_key")
+    add_to = models.CharField(max_length=50, choices=ADD_TO, null=False, blank=False)
+    key_name = models.CharField(max_length=100, default="API_KEY")
+    key_value = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    is_delete = models.BooleanField(default=False)
+
+    objects = managers.APIKeyAuthConfigManager()
+
+    def __str__(self):
+        return self.key_name
+
+
 class MockRule(models.Model):
     REQUEST_SOURCES = [
         ("PAYLOAD", "PAYLOAD"),
@@ -88,6 +117,12 @@ class MockRule(models.Model):
     condition_value = models.CharField(max_length=100)
     response_body = models.JSONField()
     response_code = models.IntegerField(default=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+    is_delete = models.BooleanField(default=False)
+
+    objects = managers.MockRuleManager()
 
     def __str__(self):
         return f'MockRule:{self.endpoint.service.base_path}/{self.endpoint.path}'

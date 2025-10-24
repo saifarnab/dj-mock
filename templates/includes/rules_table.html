@@ -1,0 +1,56 @@
+{% load static %}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Service Name</th>
+<!--        <th>Service URL</th>-->
+        <th>Endpoint Name</th>
+<!--        <th>Endpoint URL</th>-->
+        <th>Request Source</th>
+        <th>Data Format</th>
+        <th>Data Key</th>
+        <th>Data Value</th>
+        <th>Response Code</th>
+<!--        <th>Response Body</th>-->
+        <th>Created At</th>
+        <th>Status</th>
+        {% if edit %}
+        <th>Action</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for rule in rules %}
+    <tr>
+        <td>{{ rule.endpoint.service.name }}</td>
+<!--        <td>{{ rule.endpoint.service.base_path }}</td>-->
+        <td>{{ rule.endpoint.endpoint_name }}</td>
+<!--        <td>{{ rule.endpoint.path }}</td>-->
+        <td>{{ rule.request_source }}</td>
+        <td>{{ rule.data_format }}</td>
+        <td>{{ rule.condition_field }}</td>
+        <td>{{ rule.condition_value }}</td>
+        <td>{{ rule.response_code }}</td>
+<!--        <td style="word-wrap: break-word; word-break: break-all; white-space: normal; max-width: 250px;">{{ rule.response_body }}</td>-->
+        <td>{{ rule.created_at }}</td>
+        <td>
+            {% if rule.is_active %}
+            <label class="badge badge-gradient-success">ACTIVE</label>
+            {% else %}
+            <label class="badge badge-gradient-danger">INACTIVE</label>
+            {% endif %}
+        </td>
+        {% if edit %}
+        <td>
+            <a href="{% url 'edit_rule' rule.id %}" class="btn btn-light btn-sm p-1 rounded-circle"
+               title="Edit">
+                <i class="fa fa-edit" style="font-size: 0.99rem; color: #333;"></i>
+            </a>
+        </td>
+        {% endif %}
+
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

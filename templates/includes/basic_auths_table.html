@@ -1,0 +1,42 @@
+{% load static %}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Service</th>
+        <th>User Name</th>
+        <th>Password</th>
+        <th>Created At</th>
+<!--        <th>Status</th>-->
+
+        {% if edit %}
+        <th>Action</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for auth in auths %}
+    <tr>
+        <td>{{ auth.service }}</td>
+        <td>{{ auth.username }}</td>
+        <td>{{ auth.password }}</td>
+        <td>{{ auth.created_at }}</td>
+
+<!--        <td>-->
+<!--            {% if auth.is_active %}-->
+<!--            <label class="badge badge-gradient-success">ACTIVE</label>-->
+<!--            {% else %}-->
+<!--            <label class="badge badge-gradient-danger">INACTIVE</label>-->
+<!--            {% endif %}-->
+<!--        </td>-->
+        {% if edit %}
+        <td>
+            <a href="{% url 'edit_basic_auth' auth.id %}" class="btn btn-light btn-sm p-1 rounded-circle" title="Edit">
+                <i class="fa fa-edit" style="font-size: 0.99rem; color: #333;"></i>
+            </a>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                {% include 'includes/page_header.html' with name="Edit Rule" button_url="rule_list" %}
+                <p class="card-description"></p>
+                <form class="forms-sample" action="{% url 'edit_rule' ruleID %}" method="post">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="serviceName">Service Name</label>
+                        <input type="text" class="form-control" id="serviceName" name="key"
+                               minlength="3" value="{{ serviceName|default_if_none:'' }}" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serviceUrl">Service URL</label>
+                        <input type="text" class="form-control" id="serviceUrl" name="key"
+                               minlength="3" value="{{ serviceUrl|default_if_none:'' }}" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serviceName">Endpoint Name</label>
+                        <input type="text" class="form-control" id="endpointName" name="endpointName"
+                               minlength="3" value="{{ endpointName|default_if_none:'' }}" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endpointUrl">Endpoint URL</label>
+                        <input type="text" class="form-control" id="endpointUrl" name="endpointUrl"
+                               minlength="3" value="{{ endpointUrl|default_if_none:'' }}" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestSource">Request Source</label>
+                        <select class="form-select" id="requestSource" name="requestSource">
+                            <option value="PAYLOAD" {% if requestSource == 'PAYLOAD' %}selected {% endif %}>PAYLOAD</option>
+                            <option value="QUERY_PARAMS" {% if requestSource == 'QUERY_PARAMS' %}selected {% endif %}>QUERY PARAMS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataFormat">Request Data Format</label>
+                        <select class="form-select" id="dataFormat" name="dataFormat">
+                            <option value="JSON" {% if requestSource == 'JSON' %}selected {% endif %}>JSON</option>
+                            <option value="XML" {% if requestSource == 'XML' %}selected {% endif %}>XML</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="key">Conditioned Key</label>
+                        <input type="text" class="form-control" id="key" name="key" placeholder="Conditioned Key"
+                               minlength="3" value="{{ key|default_if_none:'' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="keyValue">Conditioned Key Value</label>
+                        <input type="text" class="form-control" id="keyValue" name="keyValue" placeholder="Conditioned Key Value"
+                               minlength="3" value="{{ keyValue|default_if_none:'' }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="respHttpCode">Response HTTP Code</label>
+                        <select class="form-select" id="respHttpCode" name="respHttpCode">
+                            <option value="200" {% if respHttpCode == '200' %}selected {% endif %}>200</option>
+                            <option value="201" {% if respHttpCode == '201' %}selected {% endif %}>201</option>
+                            <option value="400" {% if respHttpCode == '400' %}selected {% endif %}>400</option>
+                            <option value="403" {% if respHttpCode == '403' %}selected {% endif %}>403</option>
+                            <option value="500" {% if respHttpCode == '500' %}selected {% endif %}>500</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="responseBody">Response Body</label>
+                        <textarea class="form-control" id="responseBody" name="responseBody" rows="10"
+                                  placeholder="Enter response body">{{responseBody}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="1" {% if status == '1' %}selected {% endif %}>Active</option>
+                            <option value="0" {% if status == '0' %}selected {% endif %}>Inactive</option>
+                        </select>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'includes/notify_modal.html' with name=messages %}
+
+{% endblock %}

@@ -14,22 +14,22 @@ class MockRuleInline(admin.TabularInline):
     extra = 1
 
 
-class BasicAuthConfigInline(admin.StackedInline):
-    model = BasicAuthConfig
-    extra = 0
-    max_num = 1
-
-
-class JWTAuthConfigInline(admin.StackedInline):
-    model = JWTAuthConfig
-    extra = 0
-    max_num = 1
-
-
-class ApiKeyAuthConfigInline(admin.StackedInline):
-    model = ApiKeyAuthConfig
-    extra = 0
-    max_num = 1
+# class BasicAuthConfigInline(admin.StackedInline):
+#     model = BasicAuthConfig
+#     extra = 0
+#     max_num = 1
+#
+#
+# class JWTAuthConfigInline(admin.StackedInline):
+#     model = JWTAuthConfig
+#     extra = 0
+#     max_num = 1
+#
+#
+# class ApiKeyAuthConfigInline(admin.StackedInline):
+#     model = ApiKeyAuthConfig
+#     extra = 0
+#     max_num = 1
 
 
 @admin.register(MockEndpoint)
@@ -37,7 +37,7 @@ class MockEndpointAdmin(admin.ModelAdmin):
     list_display = ("id", "service", "path", "method", "auth_type")
     list_filter = ("method", "auth_type")
     search_fields = ("path", "service__name")
-    inlines = [MockRuleInline, BasicAuthConfigInline, JWTAuthConfigInline, ApiKeyAuthConfigInline]
+    # inlines = [MockRuleInline, JWTAuthConfigInline, ApiKeyAuthConfigInline]
 
 
 @admin.register(MockService)
@@ -53,17 +53,17 @@ class MockRuleAdmin(admin.ModelAdmin):
     search_fields = ("condition_field", "condition_value")
 
 
-# Optional: register auth configs separately (if you want them outside endpoints)
+# Optional: register auths configs separately (if you want them outside endpoints)
 @admin.register(BasicAuthConfig)
 class BasicAuthConfigAdmin(admin.ModelAdmin):
-    list_display = ("id", "endpoint", "username")
+    list_display = ("id", "service", "username")
 
 
 @admin.register(JWTAuthConfig)
 class JWTAuthConfigAdmin(admin.ModelAdmin):
-    list_display = ("id", "endpoint")
+    list_display = ("id", "service")
 
 
 @admin.register(ApiKeyAuthConfig)
 class ApiKeyAuthConfigAdmin(admin.ModelAdmin):
-    list_display = ("id", "endpoint", "add_to", "key_name", "key_value")
+    list_display = ("id", "service", "add_to", "key_name", "key_value")

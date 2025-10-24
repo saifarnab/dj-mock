@@ -1,0 +1,44 @@
+{% load static %}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Service</th>
+        <th>Key Name</th>
+        <th>Key Value</th>
+        <th>Added To</th>
+        <th>Created At</th>
+<!--        <th>Status</th>-->
+
+        {% if edit %}
+        <th>Action</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for auth in auths %}
+    <tr>
+        <td>{{ auth.service }}</td>
+        <td>{{ auth.key_name }}</td>
+        <td>{{ auth.key_value }}</td>
+        <td>{{ auth.add_to }}</td>
+        <td>{{ auth.created_at }}</td>
+
+<!--        <td>-->
+<!--            {% if auth.is_active %}-->
+<!--            <label class="badge badge-gradient-success">ACTIVE</label>-->
+<!--            {% else %}-->
+<!--            <label class="badge badge-gradient-danger">INACTIVE</label>-->
+<!--            {% endif %}-->
+<!--        </td>-->
+        {% if edit %}
+        <td>
+            <a href="{% url 'edit_api_key_auth' auth.id %}" class="btn btn-light btn-sm p-1 rounded-circle" title="Edit">
+                <i class="fa fa-edit" style="font-size: 0.99rem; color: #333;"></i>
+            </a>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

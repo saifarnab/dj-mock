@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     # Third party
+    'django_extensions',
     'rest_framework',
 
     # My app
@@ -61,7 +62,7 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
+                'django.contrib.auth.context_processors.auth',
                 "django.contrib.messages.context_processors.messages",
             ],
         },
@@ -125,3 +126,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+STAGE = "development"

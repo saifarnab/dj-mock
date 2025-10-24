@@ -6,7 +6,9 @@
 <body>
 <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
-    {% include 'includes/top_nav.html' %}
+<!--    {% include 'includes/top_nav.html' %}-->
+    {% include 'includes/top_nav.html' with nav_title=page_nav_title %}
+
     <!-- partial -->
     <div class="container-fluid page-body-wrapper">
         <!-- partial:partials/_sidebar.html -->

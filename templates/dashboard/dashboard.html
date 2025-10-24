@@ -2,9 +2,6 @@
 {% block content %}
 {% load static %}
 
-<div class="page-header">
-    {% include 'includes/page_header.html' with name=Dashboard %}
-</div>
 <div class="row">
     {% include 'includes/dashboard_card.html' with color='danger' title='Services' icon='chart-line' value=total_service %}
     {% include 'includes/dashboard_card.html' with color='info' title='Endpoints' icon='bookmark-outline' value=total_endpoints %}

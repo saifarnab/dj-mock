@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                {% include 'includes/page_header.html' with name="Edit JWT Auth" button_url="jwt_auth_list" %}
+                <p class="card-description"></p>
+                <form class="forms-sample" action="{% url 'edit_jwt_auth' authID %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="serviceName">Service</label>
+                        <input type="text" class="form-control" id="serviceName" name="serviceName"
+                               minlength="3" value="{{ serviceName }}" required disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="authHeader">Auth Header</label>
+                        <input type="text" class="form-control" id="authHeader" name="authHeader" placeholder="Auth Header"
+                               minlength="3" value="{{ authHeader}}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="token">JWT Token</label>
+                        <textarea class="form-control" id="token" name="token" placeholder="JWT Token"
+                                  minlength="3" required
+                                  style="resize: vertical; min-height: 100px;">{{ token }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'includes/notify_modal.html' with name=messages %}
+
+{% endblock %}

@@ -6,7 +6,7 @@ from rest_framework import status
 
 
 def check_auth(request, endpoint):
-    """Validate auth based on endpoint.auth_type"""
+    """Validate auths based on endpoint.auth_type"""
     if endpoint.auth_type == "none":
         return None  # no error
 
@@ -29,7 +29,7 @@ def check_auth(request, endpoint):
             return Response({"error": "Missing JWT token"}, status=status.HTTP_401_UNAUTHORIZED)
 
         if str(token).split(' ')[0].lower() != endpoint.auth_type.lower():
-            return Response({"error": "Invalid auth header"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "Invalid auths header"}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             print(str(token).split(' ')[1].lower())
@@ -53,4 +53,4 @@ def check_auth(request, endpoint):
             if key_value != endpoint.apikey_auth.key_value:
                 return Response({"error": "Invalid API Key"}, status=status.HTTP_401_UNAUTHORIZED)
 
-    return None  # ✅ auth passed
+    return None  # ✅ auths passed

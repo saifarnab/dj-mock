@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                {% include 'includes/page_header.html' with name="Create API Key Aith" button_url="api_key_auth_list" %}
+                <p class="card-description"></p>
+                <form class="forms-sample" action="{% url 'create_api_key_auth' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="serviceID">Service</label>
+                        <select class="form-select" id="serviceID" name="serviceID" required>
+                            {% for service in services %}
+                            <option value="{{ service.id }}" {% if service.id|stringformat:"s" == selected_service_id %}selected{% endif %}>{{ service.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="keyName">Key Name</label>
+                        <input type="text" class="form-control" id="keyName" name="keyName" placeholder="key Name"
+                               minlength="3" value="{{ keyName|default_if_none:'' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="keyValue">Key Value</label>
+                        <input type="text" class="form-control" id="keyValue" name="keyValue" placeholder="Key Value"
+                               minlength="3" value="{{ keyValue|default_if_none:'' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addedTo">Added To</label>
+                        <select class="form-select" id="addedTo" name="addedTo">
+                            <option value="header" {% if addedTo == 'header' %}selected {% endif %}>Header</option>
+                            <option value="query_params" {% if addedTo == 'query_params' %}selected {% endif %}>Query Params</option>
+                            <option value="body" {% if addedTo == 'body' %}selected {% endif %}>Body</option>
+                        </select>
+                    </div>
+
+<!--                    <div class="form-group">-->
+<!--                        <label for="status">Status</label>-->
+<!--                        <select class="form-select" id="status" name="status">-->
+<!--                            <option value="1" {% if status == '1' %}selected {% endif %}>Active</option>-->
+<!--                            <option value="0" {% if status == '0' %}selected {% endif %}>Inactive</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+                    <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'includes/notify_modal.html' with name=messages %}
+
+{% endblock %}

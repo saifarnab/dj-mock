@@ -1,0 +1,39 @@
+{% load static %}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Service</th>
+        <th>Service URL</th>
+        <th>Created Date</th>
+        <th>Status</th>
+        {% if edit %}
+        <th>Action</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for service in services %}
+    <tr>
+        <td>{{ service.name }}</td>
+        <td>{{ service.base_path }}</td>
+        <td>{{ service.created_at }}</td>
+        <td>
+            {% if service.is_active %}
+            <label class="badge badge-gradient-success">ACTIVE</label>
+            {% else %}
+            <label class="badge badge-gradient-danger">INACTIVE</label>
+            {% endif %}
+        </td>
+        {% if edit %}
+        <td>
+            <a href="{% url 'edit_service' service.id %}" class="btn btn-light btn-sm p-1 rounded-circle" title="Edit">
+                <i class="fa fa-edit" style="font-size: 0.99rem; color: #333;"></i>
+            </a>
+        </td>
+        {% endif %}
+
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

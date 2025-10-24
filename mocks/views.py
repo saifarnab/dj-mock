@@ -57,7 +57,7 @@ class MockServiceView(APIView):
                         if str(value) == str(mock_rule.condition_value):
                             return Response(mock_rule.response_body, status=mock_rule.response_code)
 
-        # handle auth
+        # handle auths
         auth_error = auth_utils.check_auth(request, endpoint)
         if auth_error:
             return auth_error

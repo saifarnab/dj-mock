@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                {% include 'includes/page_header.html' with name="Update Endpoint" button_url="endpoint_list" %}
+                <p class="card-description"></p>
+                <form class="forms-sample" action="{% url 'create_endpoint' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="serviceID">Service</label>
+                        <select class="form-select" id="serviceID" name="serviceID" required>
+                            {% for service in services %}
+                            <option value="{{ service.id }}" {% if service.id == endpoint.service.id %}selected{% endif %}>{{ service.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endpointName">Endpoint Name</label>
+                        <input type="text" class="form-control" id="endpointName" name="endpointName"
+                               placeholder="Endpoint Name" value="{{endpoint.endpoint_name}}"
+                               minlength="3" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endpoint">Endpoint</label>
+                        <input type="text" class="form-control" id="endpoint" name="endPoint" placeholder="Endpoint"
+                               value="{{endpoint.path}}" minlength="3" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="httpMethod">HTTP Method</label>
+                        <select class="form-select" id="httpMethod" name="httpMethod">
+                            <option value="GET" {% if endpoint.method == "GET" %}selected{% endif %}>GET</option>
+                            <option value="POST" {% if endpoint.method == "POST" %}selected{% endif %}>POST</option>
+                            <option value="PUT" {% if endpoint.method == "PUT" %}selected{% endif %}>PUT</option>
+                            <option value="PATCH" {% if endpoint.method == "PATCH" %}selected{% endif %}>PATCH</option>
+                            <option value="DELETE" {% if endpoint.method == "DELETE" %}selected{% endif %}>DELETE</option>
+                            <option value="HEAD" {% if endpoint.method == "HEAD" %}selected{% endif %}>HEAD</option>
+                            <option value="OPTIONS" {% if endpoint.method == "OPTIONS" %}selected{% endif %}>OPTIONS</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="auth_type">Auth Type</label>
+                        <select class="form-select" id="auth_type" name="authType">
+                            <option value="none" {% if endpoint.auth_type == "none" %}selected{% endif %}>None</option>
+                            <option value="basic" {% if endpoint.auth_type == "basic" %}selected{% endif %}>Basic</option>
+                            <option value="api_key" {% if endpoint.auth_type == "api_key" %}selected{% endif %}>API Key</option>
+                            <option value="jwt" {% if endpoint.auth_type == "jwt" %}selected{% endif %}>JWT</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="default_status">Default Status</label>
+                        <select class="form-select" id="default_status" name="defaultHttpStatus">
+                            <option value="200" {% if endpoint.default_http_status == 200 %}selected{% endif %}>200</option>
+                            <option value="201" {% if endpoint.default_http_status == 201 %}selected{% endif %}>201</option>
+                            <option value="400" {% if endpoint.default_http_status == 400 %}selected{% endif %}>400</option>
+                            <option value="403" {% if endpoint.default_http_status == 403 %}selected{% endif %}>403</option>
+                            <option value="500" {% if endpoint.default_http_status == 500 %}selected{% endif %}>500</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="default_response">Default JSON Response</label>
+                        <textarea class="form-control" id="default_response" name="defaultResponse" rows="10"
+                                  placeholder="Enter default JSON response">{{endpoint.default_response}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="1" {% if endpoint.is_active %}selected{% endif %}>Active</option>
+                            <option value="0" {% if not endpoint.is_active %}selected{% endif %}>Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'includes/notify_modal.html' with name=messages %}
+
+{% endblock %}

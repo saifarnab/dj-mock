@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                {% include 'includes/page_header.html' with name="Create Basic Aith" button_url="basic_auth_list" %}
+                <p class="card-description"></p>
+                <form class="forms-sample" action="{% url 'create_basic_auth' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="serviceID">Service</label>
+                        <select class="form-select" id="serviceID" name="serviceID" required>
+                            {% for service in services %}
+                            <option value="{{ service.id }}" {% if service.id|stringformat:"s" == selected_service_id %}selected{% endif %}>{{ service.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">Username</label>
+                        <input type="text" class="form-control" id="userName" name="userName" placeholder="Username"
+                               minlength="3" value="{{ username|default_if_none:'' }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="text" class="form-control" id="password" name="password" placeholder="Password"
+                               minlength="3" value="{{ password|default_if_none:'' }}" required>
+                    </div>
+<!--                    <div class="form-group">-->
+<!--                        <label for="status">Status</label>-->
+<!--                        <select class="form-select" id="status" name="status">-->
+<!--                            <option value="1" {% if status == '1' %}selected {% endif %}>Active</option>-->
+<!--                            <option value="0" {% if status == '0' %}selected {% endif %}>Inactive</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+                    <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'includes/notify_modal.html' with name=messages %}
+
+{% endblock %}
