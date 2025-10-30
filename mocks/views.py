@@ -1,3 +1,5 @@
+import json
+import xml.etree.ElementTree as ET
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -30,12 +32,6 @@ class MockServiceView(APIView):
         return Response(err, status=status.HTTP_404_NOT_FOUND)
 
     def handle_request(self, request, service_base=None, endpoint_path=None, *args, **kwargs):
-        # Clean input paths
-
-        if service_base:
-            service_base = str(service_base).strip('/').strip()
-        if endpoint_path:
-            endpoint_path = str(endpoint_path).strip('/').strip()
 
         # check endpoints
         try:
@@ -47,22 +43,53 @@ class MockServiceView(APIView):
         except MockEndpoint.DoesNotExist:
             return self._invalid_path_response()
 
-        # check mock rules
-        mock_rules = MockRule.objects.filter(endpoint=endpoint)
-        if mock_rules:
-            for mock_rule in mock_rules:
-                if mock_rule.request_source == "PAYLOAD":
-                    if mock_rule.data_format in ["JSON", "XML"]:
-                        value = utils.json_value_by_key(request.data, mock_rule.condition_field)
-                        if str(value) == str(mock_rule.condition_value):
-                            return Response(mock_rule.response_body, status=mock_rule.response_code)
+        # increase hit count
+        MockEndpoint.objects.increase_hit_count(endpoint.id)
 
         # handle auths
         auth_error = auth_utils.check_auth(request, endpoint)
         if auth_error:
             return auth_error
 
-        return Response(endpoint.default_response, status=endpoint.default_http_status)
+        # check mock rules
+        mock_rules = MockRule.objects.filter(endpoint=endpoint)
+        if mock_rules:
+            for mock_rule in mock_rules:
+                if mock_rule.request_source == "PAYLOAD":
+                    if mock_rule.data_format == "JSON":
+                        value = utils.json_value_by_key(request.data, mock_rule.condition_field)
+                        if str(value) == str(mock_rule.condition_value):
+                            jsonify = json.loads(mock_rule.response_body)
+                            return Response(jsonify, status=mock_rule.response_code)
+                    elif mock_rule.data_format == "XML":
+                        try:
+                            root = ET.fromstring(request.body.decode('utf-8'))
+                            value = utils.xml_value_by_tag(root, mock_rule.condition_field)
+                            if str(value) == str(mock_rule.condition_value):
+                                response_body = mock_rule.response_body
+                                return Response(response_body, status=mock_rule.response_code,
+                                                content_type="application/xml")
+                        except ET.ParseError:
+                            return Response(
+                                {"error": "Invalid XML format"},
+                                status=400
+                            )
+                elif mock_rule.request_source == "QUERY_PARAMS":
+                    value = request.query_params.get(mock_rule.condition_field)
+                    if str(value) == str(mock_rule.condition_value):
+                        if mock_rule.data_format == "JSON":
+                            jsonify = json.loads(mock_rule.response_body)
+                            return Response(jsonify, status=mock_rule.response_code)
+                        elif mock_rule.data_format == "XML":
+                            return Response(
+                                mock_rule.response_body,
+                                status=mock_rule.response_code,
+                                content_type="application/xml"
+                            )
+
+        jsonify = json.loads(endpoint.default_response)
+
+        return Response(jsonify, status=endpoint.default_http_status)
 
     # Dynamically route all HTTP methods to handle_request
     def get(self, request, *args, **kwargs):

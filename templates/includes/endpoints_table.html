@@ -11,7 +11,7 @@
         <th>Created Date</th>
         <th>Total Hit</th>
         <th>Endpoint Status</th>
-        {% if edit %}
+        {% if edit or details %}
         <th>Action</th>
         {% endif %}
     </tr>
@@ -20,9 +20,9 @@
     {% for endpoint in endpoints %}
     <tr>
         <td>{{ endpoint.service.name }}</td>
-        <td>/{{ endpoint.service.base_path }}</td>
+        <td>{{ endpoint.service.base_path }}</td>
         <td>
-            {% if service.endpoint.is_active %}
+            {% if endpoint.service.is_active %}
             <label class="badge badge-gradient-success">ACTIVE</label>
             {% else %}
             <label class="badge badge-gradient-danger">INACTIVE</label>
@@ -30,7 +30,7 @@
         </td>
 
         <td>{{ endpoint.endpoint_name }}</td>
-        <td>/{{ endpoint.path }}/</td>
+        <td>{{ endpoint.path }}</td>
         <td>{{ endpoint.created_at }}</td>
         <td>{{ endpoint.hit_count }}</td>
         <td>
@@ -40,12 +40,20 @@
             <label class="badge badge-gradient-danger">INACTIVE</label>
             {% endif %}
         </td>
-        {% if edit %}
+        {% if edit or details %}
         <td>
+            {% if edit and request.user == endpoint.service.user %}
             <a href="{% url 'edit_endpoint' endpoint.id %}" class="btn btn-light btn-sm p-1 rounded-circle"
                title="Edit">
                 <i class="fa fa-edit" style="font-size: 0.99rem; color: #333;"></i>
             </a>
+            {% endif %}
+            {% if details %}
+            <a href="{% url 'details_endpoint' endpoint.id %}" class="btn btn-light btn-sm p-1 rounded-circle"
+               title="Edit">
+                <i class="fa fa-eye" style="font-size: 0.99rem; color: #333;"></i>
+            </a>
+            {% endif %}
         </td>
         {% endif %}
 

@@ -21,4 +21,11 @@ urlpatterns = [
     path('edit-api-key-auth/<int:api_key_auth_id>', views.edit_api_key_auth_view, name='edit_api_key_auth'),
     path('edit-jwt-auth/<int:jwt_auth_id>', views.edit_jwt_auth_view, name='edit_jwt_auth'),
     path('edit-rule/<int:rule_id>', views.edit_rule_view, name='edit_rule'),
+    path('details-service/<int:service_id>', views.details_service_view, name='details_service'),
+    path('details-endpoint/<int:endpoint_id>', views.details_endpoint_view, name='details_endpoint'),
+    path('details-basic-auth/<int:basic_auth_id>', views.details_basic_auth_view, name='details_basic_auth'),
+    path('details-api-key-auth/<int:api_key_auth_id>', views.details_api_key_auth_view, name='details_api_key_auth'),
+    path('details-jwt-auth/<int:jwt_auth_id>', views.details_jwt_auth_view, name='details_jwt_auth'),
+    path('details-rule/<int:rule_id>', views.details_rule_view, name='details_rule'),
+
 ]

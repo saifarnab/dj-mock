@@ -7,7 +7,7 @@
         <th>Service URL</th>
         <th>Created Date</th>
         <th>Status</th>
-        {% if edit %}
+        {% if edit or details %}
         <th>Action</th>
         {% endif %}
     </tr>
@@ -27,9 +27,18 @@
         </td>
         {% if edit %}
         <td>
-            <a href="{% url 'edit_service' service.id %}" class="btn btn-light btn-sm p-1 rounded-circle" title="Edit">
+            {% if edit and request.user == service.user %}
+            <a href="{% url 'edit_service' service.id %}" class="btn btn-light btn-sm p-1 rounded-circle"
+               title="Edit">
                 <i class="fa fa-edit" style="font-size: 0.99rem; color: #333;"></i>
             </a>
+            {% endif %}
+            {% if details %}
+            <a href="{% url 'details_service' service.id %}" class="btn btn-light btn-sm p-1 rounded-circle"
+               title="Edit">
+                <i class="fa fa-eye" style="font-size: 0.99rem; color: #333;"></i>
+            </a>
+            {% endif %}
         </td>
         {% endif %}
 

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                {% include 'includes/page_header.html' with name="Details Rule" button_url="rule_list" %}
+                <p class="card-description"></p>
+                <form class="forms-sample">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="serviceName">Service Name</label>
+                        <input type="text" class="form-control" id="serviceName"
+                               value="{{ rule.endpoint.service.name }}" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serviceUrl">Service URL</label>
+                        <input type="text" class="form-control" id="serviceUrl"
+                               minlength="3" value="{{ rule.endpoint.service.base_path }}" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serviceName">Endpoint Name</label>
+                        <input type="text" class="form-control" id="endpointName"
+                               value="{{ rule.endpoint.endpoint_name }}" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endpointUrl">Endpoint URL</label>
+                        <input type="text" class="form-control" id="endpointUrl" value="{{ rule.endpoint.path }}"
+                               disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestSource">Request Source</label>
+                        <input type="text" class="form-control" id="requestSource" value="{{ rule.request_source }}"
+                               disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataFormat">Request Data Format</label>
+                        <input type="text" class="form-control" id="dataFormat" value="{{ rule.data_format }}"
+                               disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="key">Conditioned Key</label>
+                        <input type="text" class="form-control" id="key" value="{{ rule.condition_field }}"
+                               disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="keyValue">Conditioned Key Value</label>
+                        <input type="text" class="form-control" id="keyValue" value="{{ rule.condition_value }}"
+                               disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="respHttpCode">Response HTTP Code</label>
+                        <input type="text" class="form-control" id="respHttpCode" value="{{ rule.response_code }}"
+                               disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="responseBody">Response Body</label>
+                        <textarea class="form-control" id="responseBody" rows="10" disabled>{{rule.response_body}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <input type="text" class="form-control" id="status"
+                               value="{% if rule.is_active %}Active{% else %}Inactive{% endif %}" disabled>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'includes/notify_modal.html' with name=messages %}
+
+{% endblock %}

@@ -27,6 +27,21 @@
                                   minlength="3" required
                                   style="resize: vertical; min-height: 100px;">{{ token }}</textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="unAuthStatus">Unauthorized HTTP Status</label>
+                        <select class="form-select" id="unAuthStatus" name="unAuthStatus" required>
+                            <option value="400" {% if unAuthStatus == '400' %}selected {% endif %}>400</option>
+                            <option value="401" {% if unAuthStatus == '401' %}selected {% endif %}>401</option>
+                            <option value="402" {% if unAuthStatus == '402' %}selected {% endif %}>402</option>
+                            <option value="403" {% if unAuthStatus == '403' %}selected {% endif %}>403</option>
+                            <option value="500" {% if unAuthStatus == '500' %}selected {% endif %}>500</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="unAuthRes">Unauthorized Response</label>
+                        <textarea class="form-control" id="unAuthRes" name="unAuthRes" rows="10"
+                                  placeholder="Enter Unauthorized Response" required>{{unAuthRes}}</textarea>
+                    </div>
                     <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
                 </form>
             </div>

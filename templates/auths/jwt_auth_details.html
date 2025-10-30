@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                {% include 'includes/page_header.html' with name="JWT Auth Details" button_url="jwt_auth_list" %}
+                <p class="card-description"></p>
+                <form class="forms-sample">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="serviceName">Service</label>
+                        <input type="text" class="form-control" id="serviceName" value="{{ auth.service.name }}"
+                               disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="authHeader">Auth Header</label>
+                        <input type="text" class="form-control" id="authHeader" value="{{ auth.auth_header}}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="token">JWT Token</label>
+                        <textarea class="form-control" id="token" name="token" disabled
+                                  style="resize: vertical; min-height: 100px;">{{ auth.token }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="unAuthStatus">Unauthorized HTTP Status</label>
+                        <input type="text" class="form-control" id="unAuthStatus" value="{{ auth.failed_http_status}}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="unAuthRes">Unauthorized Response</label>
+                        <input type="text" class="form-control" id="unAuthRes" value="{{ auth.failed_response}}" disabled>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'includes/notify_modal.html' with name=messages %}
+
+{% endblock %}

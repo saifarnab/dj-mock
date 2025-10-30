@@ -7,9 +7,7 @@
         <th>User Name</th>
         <th>Password</th>
         <th>Created At</th>
-<!--        <th>Status</th>-->
-
-        {% if edit %}
+        {% if edit or details %}
         <th>Action</th>
         {% endif %}
     </tr>
@@ -21,21 +19,20 @@
         <td>{{ auth.username }}</td>
         <td>{{ auth.password }}</td>
         <td>{{ auth.created_at }}</td>
-
-<!--        <td>-->
-<!--            {% if auth.is_active %}-->
-<!--            <label class="badge badge-gradient-success">ACTIVE</label>-->
-<!--            {% else %}-->
-<!--            <label class="badge badge-gradient-danger">INACTIVE</label>-->
-<!--            {% endif %}-->
-<!--        </td>-->
-        {% if edit %}
         <td>
-            <a href="{% url 'edit_basic_auth' auth.id %}" class="btn btn-light btn-sm p-1 rounded-circle" title="Edit">
+            {% if edit and request.user == auth.service.user %}
+            <a href="{% url 'edit_basic_auth' auth.id %}" class="btn btn-light btn-sm p-1 rounded-circle"
+               title="Edit">
                 <i class="fa fa-edit" style="font-size: 0.99rem; color: #333;"></i>
             </a>
+            {% endif %}
+            {% if details %}
+            <a href="{% url 'details_basic_auth' auth.id %}" class="btn btn-light btn-sm p-1 rounded-circle"
+               title="Details">
+                <i class="fa fa-eye" style="font-size: 0.99rem; color: #333;"></i>
+            </a>
+            {% endif %}
         </td>
-        {% endif %}
     </tr>
     {% endfor %}
     </tbody>

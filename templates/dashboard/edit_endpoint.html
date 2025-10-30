@@ -9,15 +9,22 @@
             <div class="card-body">
                 {% include 'includes/page_header.html' with name="Update Endpoint" button_url="endpoint_list" %}
                 <p class="card-description"></p>
-                <form class="forms-sample" action="{% url 'create_endpoint' %}" method="post">
+                <form class="forms-sample" action="{% url 'edit_endpoint' endpoint.id %}" method="post">
                     {% csrf_token %}
+<!--                    <div class="form-group">-->
+<!--                        <label for="serviceID">Service</label>-->
+<!--                        <select class="form-select" id="serviceID" name="serviceID" required>-->
+<!--                            {% for service in services %}-->
+<!--                            <option value="{{ service.id }}" {% if service.id == endpoint.service.id %}selected{% endif %}>{{ service.name }}</option>-->
+<!--                            {% endfor %}-->
+<!--                        </select>-->
+<!--                    </div>-->
+
                     <div class="form-group">
-                        <label for="serviceID">Service</label>
-                        <select class="form-select" id="serviceID" name="serviceID" required>
-                            {% for service in services %}
-                            <option value="{{ service.id }}" {% if service.id == endpoint.service.id %}selected{% endif %}>{{ service.name }}</option>
-                            {% endfor %}
-                        </select>
+                        <label for="service">Service</label>
+                        <input type="text" class="form-control" id="service" name="service"
+                               placeholder="Endpoint Name" value="{{endpoint.service.name}}"
+                               minlength="3" disabled>
                     </div>
 
                     <div class="form-group">
@@ -78,7 +85,9 @@
                             <option value="0" {% if not endpoint.is_active %}selected{% endif %}>Inactive</option>
                         </select>
                     </div>
+
                     <button type="submit" class="btn btn-gradient-primary me-2">Submit</button>
+
                 </form>
             </div>
         </div>

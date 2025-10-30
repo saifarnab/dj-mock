@@ -7,7 +7,7 @@
         <th>Auth Header</th>
         <th>Token</th>
         <th>Created At</th>
-        {% if edit %}
+        {% if edit or details %}
         <th>Action</th>
         {% endif %}
     </tr>
@@ -21,11 +21,18 @@
             {{ auth.token }}
         </td>
         <td>{{ auth.created_at }}</td>
-        {% if edit %}
+        {% if edit or details %}
         <td>
-            <a href="{% url 'edit_jwt_auth' auth.id %}" class="btn btn-light btn-sm p-1 rounded-circle" title="Edit">
-                <i class="fa fa-edit" style="font-size: 0.99rem; color: #333;"></i>
-            </a>
+            {% if edit and request.user == auth.service.user %}
+                <a href="{% url 'edit_jwt_auth' auth.id %}" class="btn btn-light btn-sm p-1 rounded-circle" title="Edit">
+                    <i class="fa fa-edit" style="font-size: 0.99rem; color: #333;"></i>
+                </a>
+            {% endif %}
+            {% if details %}
+                <a href="{% url 'details_jwt_auth' auth.id %}" class="btn btn-light btn-sm p-1 rounded-circle" title="Details">
+                    <i class="fa fa-eye" style="font-size: 0.99rem; color: #333;"></i>
+                </a>
+            {% endif %}
         </td>
         {% endif %}
     </tr>

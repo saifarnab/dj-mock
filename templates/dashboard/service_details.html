@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+
+                {% include 'includes/page_header.html' with name="Service Details" button_url="service_list" %}
+                <p class="card-description"></p>
+                <form class="forms-sample">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="serviceName">Name</label>
+                        <input type="text" class="form-control" id="serviceName" value="{{service.name}}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="baseUrl">Base URL</label>
+                        <input type="text" class="form-control" id="baseUrl" value="{{service.base_path}}" disabled>
+                    </div>
+                     <div class="form-group">
+                        <label for="createdAt">Created At</label>
+                        <input type="text" class="form-control" id="createdAt" value="{{service.created_at}}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <input type="text" class="form-control" id="status"
+                               value="{% if service.is_active %}Active{% else %}Inactive{% endif %}" disabled>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% include 'includes/notify_modal.html' with name=messages %}
+
+{% endblock %}

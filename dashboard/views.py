@@ -47,7 +47,7 @@ def create_service_view(request):
 
     if request.method == "POST":
         service_name = str(request.POST.get("serviceName")).strip()
-        base_url = str(request.POST.get("baseUrl")).strip()
+        base_url = str(request.POST.get("baseUrl")).strip('/').strip()
         status_value = request.POST.get("status")
         status = True if status_value == "1" else False
 
@@ -80,7 +80,7 @@ def create_service_view(request):
 
         return render(request, 'dashboard/services.html', context)
 
-    return render(request, 'dashboard/create_service.html', {'page_nav_title': 'Create Mock Service',})
+    return render(request, 'dashboard/create_service.html', {'page_nav_title': 'Create Mock Service', })
 
 
 @login_required(login_url='login')
@@ -90,7 +90,7 @@ def create_endpoint_view(request):
     if request.method == "POST":
         service_id = str(request.POST.get("serviceID")).strip()
         endpoint_name = str(request.POST.get("endpointName")).strip()
-        end_point = str(request.POST.get("endPoint")).strip()
+        end_point = str(request.POST.get("endPoint")).lstrip('/').strip()
         http_method = request.POST.get("httpMethod").strip()
         auth_type = request.POST.get("authType").strip()
         default_http_status = request.POST.get("defaultHttpStatus").strip()
@@ -111,21 +111,21 @@ def create_endpoint_view(request):
             "status": status_value,
         }
 
-        # check endpoint availability
-        if MockEndpoint.objects.check_endpoint_existence(service_id, end_point):
-            messages.error(request, "Endpoint already available")
-            return render(request, 'dashboard/create_endpoint.html', form_data)
+        # # check endpoint availability
+        # if MockEndpoint.objects.check_endpoint_existence(service_id, end_point):
+        #     messages.error(request, "Endpoint already available")
+        #     return render(request, 'dashboard/create_endpoint.html', form_data)
 
         # check service availability
-        service = MockService.objects.get_service(service_id, request.user)
+        service = MockService.objects.get_service(service_id)
         if not service:
             messages.error(request, "You are not authorized to create this endpoint.")
             return render(request, 'dashboard/create_endpoint.html', form_data)
 
         # create new endpoint
-        new_endpoint = MockEndpoint.objects.create_new_endpoint(service, end_point, endpoint_name,
-                                                                http_method, auth_type, default_http_status,
-                                                                default_response, status, endpoint_name)
+        new_endpoint = MockEndpoint.objects.create_new_endpoint(service, end_point, http_method, auth_type,
+                                                                default_http_status, default_response, status,
+                                                                endpoint_name)
 
         # get the endpoints
         endpoints = MockEndpoint.objects.get_service_endpoints(service.id)
@@ -150,7 +150,7 @@ def create_endpoint_view(request):
 @login_required(login_url='login')
 def edit_service_view(request, service_id):
     if request.method == "POST":
-        base_url = str(request.POST.get("baseUrl")).strip()
+        base_url = str(request.POST.get("baseUrl")).strip('/').strip()
         status_value = request.POST.get("status")
         status = True if status_value == "1" else False
         MockService.objects.update_service(service_id, request.user, base_url, status)
@@ -168,7 +168,7 @@ def edit_service_view(request, service_id):
 
         return render(request, 'dashboard/services.html', context)
 
-    service = MockService.objects.get_service(service_id, request.user)
+    service = MockService.objects.get_service(service_id)
     context = {
         'page_nav_title': 'Edit Mock Service',
         'service': service,
@@ -178,13 +178,11 @@ def edit_service_view(request, service_id):
 
 @login_required(login_url='login')
 def edit_endpoint_view(request, endpoint_id):
-    services = MockService.objects.get_services_by_user(request.user)
-
     if request.method == "POST":
 
-        endpoint = MockEndpoint.objects.get_endpoint(endpoint_id, request.user)
+        endpoint = MockEndpoint.objects.get_endpoint(endpoint_id)
         endpoint_name = str(request.POST.get("endpointName")).strip()
-        end_point = str(request.POST.get("endPoint")).strip()
+        end_point = str(request.POST.get("endPoint")).lstrip('/').strip()
         http_method = request.POST.get("httpMethod").strip()
         auth_type = request.POST.get("authType").strip()
         default_http_status = request.POST.get("defaultHttpStatus").strip()
@@ -193,9 +191,8 @@ def edit_endpoint_view(request, endpoint_id):
         status = True if status_value == "1" else False
 
         form_data = {
+            'endpoint': endpoint,
             'page_nav_title': 'Edit Mock Endpoint',
-            "services": services,
-            "selected_service_id": endpoint.service.id,
             "endPoint": end_point,
             "endpointName": endpoint_name,
             "httpMethod": http_method,
@@ -206,21 +203,29 @@ def edit_endpoint_view(request, endpoint_id):
         }
 
         # check endpoint name availability
-        if MockEndpoint.objects.check_endpoint_name(request.user, endpoint_name):
+        if MockEndpoint.objects.check_endpoint_name(request.user, endpoint_name, endpoint.id):
             messages.error(request, "Endpoint name already available")
             return render(request, 'dashboard/edit_endpoint.html', form_data)
 
         # check endpoint url availability
-        if MockEndpoint.objects.check_endpoint_existence(request.user, endpoint.service.id, end_point):
+        if MockEndpoint.objects.check_endpoint_existence(endpoint.service.id, end_point, endpoint.id):
             messages.error(request, "Endpoint url already available")
             return render(request, 'dashboard/edit_endpoint.html', form_data)
 
-    services = MockService.objects.get_services_by_user(request.user)
-    endpoint = MockEndpoint.objects.get_endpoint(endpoint_id, request.user)
+        MockEndpoint.objects.update_endpoint(endpoint.id, request.user, endpoint.service, end_point, http_method,
+                                             auth_type, default_http_status, default_response, status, endpoint_name)
+
+        endpoints = MockEndpoint.objects.get_endpoints(request.user)
+        context = {
+            'page_nav_title': 'Mock Endpoints',
+            'endpoints': endpoints,
+        }
+        return render(request, 'dashboard/endpoints.html', context)
+
+    endpoint = MockEndpoint.objects.get_endpoint(endpoint_id)
     context = {
         'page_nav_title': 'Edit Mock Endpoint',
         'endpoint': endpoint,
-        'services': services,
     }
     return render(request, 'dashboard/edit_endpoint.html', context)
 
@@ -254,8 +259,8 @@ def create_basic_auth_view(request):
         service_id = str(request.POST.get("serviceID")).strip()
         username = str(request.POST.get("userName")).strip()
         password = request.POST.get("password").strip()
-        # status_value = request.POST.get("status")
-        # status = True if status_value == "1" else False
+        failed_status = int(request.POST.get("unAuthStatus").strip())
+        failed_response = request.POST.get("unAuthRes").strip()
 
         form_data = {
             'page_nav_title': 'Auth / Create Basic Auth',
@@ -263,11 +268,12 @@ def create_basic_auth_view(request):
             "selected_service_id": service_id,
             "username": username,
             "password": password,
-            # "status": status_value
+            "unAuthStatus": str(failed_status),
+            "unAuthRes": failed_response
         }
 
         # check service availability
-        service = MockService.objects.get_service(service_id, request.user)
+        service = MockService.objects.get_service(service_id)
         if not service:
             messages.error(request, "Service not available")
             return render(request, 'auths/create_basic_auth.html', form_data)
@@ -278,14 +284,14 @@ def create_basic_auth_view(request):
             return render(request, 'auths/create_basic_auth.html', form_data)
 
         # create new basic auth
-        BasicAuthConfig.objects.create_new_basic_auth(service, username, password, True)
+        BasicAuthConfig.objects.create_new_basic_auth(service, username, password, True, failed_status, failed_response)
 
         # get basic auths
         auths = BasicAuthConfig.objects.get_basic_auths(request.user)
-        context = {'page_nav_title': 'Auth / Basic Auths','auth': auths}
+        context = {'page_nav_title': 'Auth / Basic Auths', 'auth': auths}
         return render(request, 'auths/basic_auths.html', context)
 
-    context = {'page_nav_title': 'Auth / Create Basic Auth','services': services}
+    context = {'page_nav_title': 'Auth / Create Basic Auth', 'services': services}
     return render(request, 'auths/create_basic_auth.html', context)
 
 
@@ -298,8 +304,8 @@ def create_api_key_auth_view(request):
         key_name = str(request.POST.get("keyName")).strip()
         key_value = request.POST.get("keyValue").strip()
         added_to = request.POST.get("addedTo").strip()
-        # status_value = request.POST.get("status")
-        # status = True if status_value == "1" else False
+        failed_status = int(request.POST.get("unAuthStatus").strip())
+        failed_response = request.POST.get("unAuthRes").strip()
 
         form_data = {
             'page_nav_title': 'Auth / Create API Key',
@@ -308,11 +314,12 @@ def create_api_key_auth_view(request):
             "keyName": key_name,
             "keyValue": key_value,
             "addedTo": added_to,
-            # "status": status_value
+            "unAuthStatus": str(failed_status),
+            "unAuthRes": failed_response
         }
 
         # check service availability
-        service = MockService.objects.get_service(service_id, request.user)
+        service = MockService.objects.get_service(service_id)
         if not service:
             messages.error(request, "Service not available")
             return render(request, 'auths/create_api_key_auth.html', form_data)
@@ -323,14 +330,15 @@ def create_api_key_auth_view(request):
             return render(request, 'auths/create_api_key_auth.html', form_data)
 
         # create new basic auth
-        ApiKeyAuthConfig.objects.create_new_api_key_auth(service, key_name, key_value, added_to, True)
+        ApiKeyAuthConfig.objects.create_new_api_key_auth(service, key_name, key_value, added_to, True, failed_status,
+                                                         failed_response)
 
         # get api key auths
         auths = ApiKeyAuthConfig.objects.get_api_key_auths(request.user)
-        context = {'page_nav_title': 'Auth / API Keys','auths': auths}
+        context = {'page_nav_title': 'Auth / API Keys', 'auths': auths}
         return render(request, 'auths/api_key_auths.html', context)
 
-    context = {'page_nav_title': 'Auth / Create API Key','services': services}
+    context = {'page_nav_title': 'Auth / Create API Key', 'services': services}
     return render(request, 'auths/create_api_key_auth.html', context)
 
 
@@ -342,8 +350,8 @@ def create_jwt_auth_view(request):
         service_id = str(request.POST.get("serviceID")).strip()
         auth_header = str(request.POST.get("authHeader")).strip()
         token = request.POST.get("token").strip()
-        # status_value = request.POST.get("status")
-        # status = True if status_value == "1" else False
+        failed_status = int(request.POST.get("unAuthStatus").strip())
+        failed_response = request.POST.get("unAuthRes").strip()
 
         form_data = {
             'page_nav_title': 'Auth / Create JWT Token',
@@ -351,11 +359,12 @@ def create_jwt_auth_view(request):
             "selected_service_id": service_id,
             "authHeader": auth_header,
             "token": token,
-            # "status": status_value
+            "unAuthStatus": str(failed_status),
+            "unAuthRes": failed_response
         }
 
         # check service availability
-        service = MockService.objects.get_service(service_id, request.user)
+        service = MockService.objects.get_service(service_id)
         if not service:
             messages.error(request, "Service not available")
             return render(request, 'auths/create_jwt_auth.html', form_data)
@@ -366,14 +375,14 @@ def create_jwt_auth_view(request):
             return render(request, 'auths/create_jwt_auth.html', form_data)
 
         # create new JWT auth
-        JWTAuthConfig.objects.create_new_jwt_auth(service, auth_header, token, True)
+        JWTAuthConfig.objects.create_new_jwt_auth(service, auth_header, token, True, failed_status, failed_response)
 
         # get JWT auths
         auths = JWTAuthConfig.objects.get_jwt_auths(request.user)
-        context = {'page_nav_title': 'Auth / JWT Tokens','auth': auths}
+        context = {'page_nav_title': 'Auth / JWT Tokens', 'auth': auths}
         return render(request, 'auths/jwt_auths.html', context)
 
-    context = {'page_nav_title': 'Auth / Create JWT Token','services': services}
+    context = {'page_nav_title': 'Auth / Create JWT Token', 'services': services}
     return render(request, 'auths/create_jwt_auth.html', context)
 
 
@@ -384,35 +393,38 @@ def edit_basic_auth_view(request, basic_auth_id):
         service_name = str(request.POST.get("serviceName")).strip()
         username = str(request.POST.get("userName")).strip()
         password = request.POST.get("password").strip()
-        # status_value = request.POST.get("status")
-        # status = True if status_value == "1" else False
+        failed_status = int(request.POST.get("unAuthStatus").strip())
+        failed_response = request.POST.get("unAuthRes").strip()
 
         form_data = {
             'page_nav_title': 'Auth / Edit Basic Auth',
             "serviceName": service_name,
             "username": username,
             "password": password,
-            # "status": status_value
+            "unAuthStatus": str(failed_status),
+            "unAuthRes": failed_response
         }
 
-        basic_auth = BasicAuthConfig.objects.get_basic_auth(request.user, basic_auth_id)
+        basic_auth = BasicAuthConfig.objects.get_basic_auth(basic_auth_id)
         if not basic_auth:
             messages.error(request, "Invalid Request")
             return render(request, 'auths/edit_basic_auth.html', form_data)
 
-        BasicAuthConfig.objects.update_basic_auth(basic_auth.id, request.user, username, password, True)
+        BasicAuthConfig.objects.update_basic_auth(basic_auth.id, request.user, username, password, True,
+                                                  failed_status, failed_response)
         auths = BasicAuthConfig.objects.get_basic_auths(request.user)
-        context = {'page_nav_title': 'Auth / Basic Auths','auths': auths}
+        context = {'page_nav_title': 'Auth / Basic Auths', 'auths': auths}
         return render(request, 'auths/basic_auths.html', context)
 
-    basic_auth = BasicAuthConfig.objects.get_basic_auth(request.user, basic_auth_id)
+    basic_auth = BasicAuthConfig.objects.get_basic_auth(basic_auth_id)
     context = {
         'page_nav_title': 'Auth / Edit Basic Auth',
         "authID": basic_auth.id,
         "serviceName": basic_auth.service.name,
         "username": basic_auth.username,
         "password": basic_auth.password,
-        "status": "1" if basic_auth.is_active else "0"
+        "unAuthStatus": basic_auth.failed_http_status,
+        "unAuthRes": basic_auth.failed_response
     }
     return render(request, 'auths/edit_basic_auth.html', context)
 
@@ -425,35 +437,40 @@ def edit_api_key_auth_view(request, api_key_auth_id):
         key_name = str(request.POST.get("keyName")).strip()
         key_value = str(request.POST.get("keyValue")).strip()
         added_to = request.POST.get("addedTo").strip()
-        # status_value = request.POST.get("status")
-        # status = True if status_value == "1" else False
+        failed_status = int(request.POST.get("unAuthStatus").strip())
+        failed_response = request.POST.get("unAuthRes").strip()
 
         form_data = {
             'page_nav_title': 'Auth / Edit API Key',
             "serviceName": service_name,
             "keyName": key_name,
             "keyValue": key_value,
-            "addedTo": added_to
+            "addedTo": added_to,
+            "unAuthStatus": str(failed_status),
+            "unAuthRes": failed_response
         }
 
-        api_key_auth = ApiKeyAuthConfig.objects.get_api_key_auth(request.user, api_key_auth_id)
+        api_key_auth = ApiKeyAuthConfig.objects.get_api_key_auth(api_key_auth_id)
         if not api_key_auth:
             messages.error(request, "Invalid Request")
             return render(request, 'auths/edit_api_key_auth.html', form_data)
 
-        ApiKeyAuthConfig.objects.update_api_key_auth(api_key_auth.id, request.user, key_name, key_value, added_to, True)
+        ApiKeyAuthConfig.objects.update_api_key_auth(api_key_auth.id, request.user, key_name, key_value, added_to,
+                                                     True, failed_status, failed_response)
         auths = ApiKeyAuthConfig.objects.get_api_key_auths(request.user)
-        context = {'page_nav_title': 'Auth / API Keys','auths': auths}
+        context = {'page_nav_title': 'Auth / API Keys', 'auths': auths}
         return render(request, 'auths/api_key_auths.html', context)
 
-    api_key_auth = ApiKeyAuthConfig.objects.get_api_key_auth(request.user, api_key_auth_id)
+    api_key_auth = ApiKeyAuthConfig.objects.get_api_key_auth(api_key_auth_id)
     context = {
         'page_nav_title': 'Auth / Edit API Key',
         "authID": api_key_auth.id,
         "serviceName": api_key_auth.service.name,
         "keyName": api_key_auth.key_name,
         "keyValue": api_key_auth.key_value,
-        "addedTo": api_key_auth.add_to
+        "addedTo": api_key_auth.add_to,
+        "unAuthStatus": str(api_key_auth.failed_http_status),
+        "unAuthRes": api_key_auth.failed_response
     }
     return render(request, 'auths/edit_api_key_auth.html', context)
 
@@ -465,31 +482,38 @@ def edit_jwt_auth_view(request, jwt_auth_id):
         service_name = str(request.POST.get("serviceName")).strip()
         auth_header = str(request.POST.get("authHeader")).strip()
         token = request.POST.get("token").strip()
+        failed_status = int(request.POST.get("unAuthStatus").strip())
+        failed_response = request.POST.get("unAuthRes").strip()
 
         form_data = {
             'page_nav_title': 'Auth / Edit JWT Token',
             "serviceName": service_name,
             "authHeader": auth_header,
-            "token": token
+            "token": token,
+            "unAuthStatus": str(failed_status),
+            "unAuthRes": failed_response
         }
 
-        jwt_auth = JWTAuthConfig.objects.get_jwt_auth(request.user, jwt_auth_id)
+        jwt_auth = JWTAuthConfig.objects.get_jwt_auth(jwt_auth_id)
         if not jwt_auth:
             messages.error(request, "Invalid Request")
             return render(request, 'auths/edit_jwt_auth.html', form_data)
 
-        JWTAuthConfig.objects.update_jwt_auth(jwt_auth.id, request.user, auth_header, token, True)
+        JWTAuthConfig.objects.update_jwt_auth(jwt_auth.id, request.user, auth_header, token, True, failed_status,
+                                              failed_response)
         auths = JWTAuthConfig.objects.get_jwt_auths(request.user)
-        context = {'page_nav_title': 'Auth / JWT Tokens','auths': auths}
+        context = {'page_nav_title': 'Auth / JWT Tokens', 'auths': auths}
         return render(request, 'auths/jwt_auths.html', context)
 
-    jwt_auth = JWTAuthConfig.objects.get_jwt_auth(request.user, jwt_auth_id)
+    jwt_auth = JWTAuthConfig.objects.get_jwt_auth(jwt_auth_id)
     context = {
         'page_nav_title': 'Auth / Edit JWT Token',
         "authID": jwt_auth.id,
         "serviceName": jwt_auth.service.name,
         "authHeader": jwt_auth.auth_header,
         "token": jwt_auth.token,
+        "unAuthStatus": str(jwt_auth.failed_http_status),
+        "unAuthRes": jwt_auth.failed_response
     }
     return render(request, 'auths/edit_jwt_auth.html', context)
 
@@ -518,11 +542,11 @@ def create_rule_view(request):
         status_value = request.POST.get("status")
         status = True if status_value == "1" else False
 
-        endpoint = MockEndpoint.objects.get_endpoint(endpoint_id, request.user)
+        endpoint = MockEndpoint.objects.get_endpoint(endpoint_id)
         MockRule.objects.create_rule(endpoint, source, data_format, key, key_value, resp_http_code, resp_body, status)
 
         rules = MockRule.objects.get_rules(request.user)
-        context = {'page_nav_title': 'Create Rule','rules': rules}
+        context = {'page_nav_title': 'Create Rule', 'rules': rules}
         return render(request, 'rules/rules.html', context)
 
     context = {
@@ -537,7 +561,7 @@ def create_rule_view(request):
 
 @login_required(login_url='login')
 def edit_rule_view(request, rule_id):
-    rule = MockRule.objects.get_rule(request.user, rule_id)
+    rule = MockRule.objects.get_rule(rule_id)
 
     if request.method == "POST":
         source = str(request.POST.get("requestSource")).strip()
@@ -571,3 +595,63 @@ def edit_rule_view(request, rule_id):
     }
 
     return render(request, 'rules/edit_rule.html', context)
+
+
+@login_required(login_url='login')
+def details_service_view(request, service_id):
+    service = MockService.objects.get_service(service_id)
+    context = {
+        'page_nav_title': 'Mock Service Details',
+        'service': service,
+    }
+    return render(request, 'dashboard/service_details.html', context)
+
+
+@login_required(login_url='login')
+def details_endpoint_view(request, endpoint_id):
+    endpoint = MockEndpoint.objects.get_endpoint(endpoint_id)
+    context = {
+        'page_nav_title': 'Mock Endpoint Details',
+        'endpoint': endpoint,
+    }
+    return render(request, 'dashboard/endpoint_details.html', context)
+
+
+@login_required(login_url='login')
+def details_basic_auth_view(request, basic_auth_id):
+    ba = BasicAuthConfig.objects.get_basic_auth(basic_auth_id)
+    context = {
+        'page_nav_title': 'Basic Auth Details',
+        'auth': ba,
+    }
+    return render(request, 'auths/basic_auth_details.html', context)
+
+
+@login_required(login_url='login')
+def details_api_key_auth_view(request, api_key_auth_id):
+    ak = ApiKeyAuthConfig.objects.get_api_key_auth(api_key_auth_id)
+    context = {
+        'page_nav_title': 'Basic Auth Details',
+        'auth': ak,
+    }
+    return render(request, 'auths/api_key_auth_details.html', context)
+
+
+@login_required(login_url='login')
+def details_jwt_auth_view(request, jwt_auth_id):
+    jwt = JWTAuthConfig.objects.get_jwt_auth(jwt_auth_id)
+    context = {
+        'page_nav_title': 'JWT Auth Details',
+        'auth': jwt,
+    }
+    return render(request, 'auths/jwt_auth_details.html', context)
+
+
+@login_required(login_url='login')
+def details_rule_view(request, rule_id):
+    rule = MockRule.objects.get_rule(rule_id)
+    context = {
+        'page_nav_title': 'Rule Details',
+        'rule': rule,
+    }
+    return render(request, 'rules/rule_details.html', context)
