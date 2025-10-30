@@ -88,7 +88,6 @@ class MockServiceView(APIView):
                             )
 
         jsonify = json.loads(endpoint.default_response)
-
         return Response(jsonify, status=endpoint.default_http_status)
 
     # Dynamically route all HTTP methods to handle_request
