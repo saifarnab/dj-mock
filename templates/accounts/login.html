@@ -18,8 +18,8 @@
                         <form class="pt-3" method="POST" action="{% url 'login' %}">
                             {% csrf_token %}
                             <div class="form-group">
-                                <input type="text" class="form-control form-control-lg" name="username"
-                                       placeholder="Username">
+                                <input type="email" class="form-control form-control-lg" name="username"
+                                       placeholder="Email">
                             </div>
                             <div class="form-group">
                                 <input type="password" class="form-control form-control-lg" id="exampleInputPassword1"
@@ -36,10 +36,10 @@
                                     <label class="form-check-label text-muted">
                                         <input type="checkbox" class="form-check-input"> Keep me signed in </label>
                                 </div>
-                                <a href="#" class="auth-link text-primary">Forgot password?</a>
+<!--                                <a href="#" class="auth-link text-primary">Forgot password?</a>-->
                             </div>
                             <div class="text-center mt-4 font-weight-light"> Don't have an account? <a
-                                    href="{% url 'register' %}" class="text-primary">Create</a>
+                                    href="{% url 'register' %}" class="text-primary">Register</a>
                             </div>
                         </form>
                     </div>

@@ -25,7 +25,8 @@ def logout_view(request):
 
 def register_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
+        name = request.POST['full_name']
+        username = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
 
@@ -37,7 +38,7 @@ def register_view(request):
             messages.error(request, "Username already taken")
             return render(request, 'accounts/register.html')
 
-        User.objects.create_user(username=username, password=password)
+        User.objects.create_user(username=username, email=username, password=password, first_name=name)
         messages.success(request, "Registration successful!")
         return render(request, 'accounts/register.html', {
             "registration_success": True})

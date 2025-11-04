@@ -1,18 +1,15 @@
 {% load static %}
 
-<table class="table">
+<table id="serviceTable" class="table">
     <thead>
     <tr>
         <th>Service Name</th>
-<!--        <th>Service URL</th>-->
         <th>Endpoint Name</th>
-<!--        <th>Endpoint URL</th>-->
         <th>Request Source</th>
         <th>Data Format</th>
         <th>Data Key</th>
         <th>Data Value</th>
         <th>Response Code</th>
-<!--        <th>Response Body</th>-->
         <th>Created At</th>
         <th>Status</th>
         {% if edit or details %}
@@ -24,15 +21,12 @@
     {% for rule in rules %}
     <tr>
         <td>{{ rule.endpoint.service.name }}</td>
-<!--        <td>{{ rule.endpoint.service.base_path }}</td>-->
         <td>{{ rule.endpoint.endpoint_name }}</td>
-<!--        <td>{{ rule.endpoint.path }}</td>-->
         <td>{{ rule.request_source }}</td>
         <td>{{ rule.data_format }}</td>
         <td>{{ rule.condition_field }}</td>
         <td>{{ rule.condition_value }}</td>
         <td>{{ rule.response_code }}</td>
-<!--        <td style="word-wrap: break-word; word-break: break-all; white-space: normal; max-width: 250px;">{{ rule.response_body }}</td>-->
         <td>{{ rule.created_at }}</td>
         <td>
             {% if rule.is_active %}

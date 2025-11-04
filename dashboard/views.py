@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
+from helpers.utils import service_path
 from mocks.models import MockEndpoint, MockService, BasicAuthConfig, ApiKeyAuthConfig, JWTAuthConfig, MockRule
 
 
@@ -16,6 +17,8 @@ def dashboard_view(request):
         'total_endpoints': total_endpoints,
         'total_hits': total_hits,
         'endpoints': endpoints,
+        'host': service_path(request)
+
     }
 
     return render(request, 'dashboard/dashboard.html', context)
@@ -27,6 +30,7 @@ def service_list_view(request):
     context = {
         'page_nav_title': 'Mock Services',
         'services': services,
+        'host': service_path(request)
     }
     return render(request, 'dashboard/services.html', context)
 
@@ -37,6 +41,7 @@ def endpoint_list_view(request):
     context = {
         'page_nav_title': 'Mock Endpoints',
         'endpoints': endpoints,
+        'host': service_path(request)
     }
     return render(request, 'dashboard/endpoints.html', context)
 
@@ -603,6 +608,7 @@ def details_service_view(request, service_id):
     context = {
         'page_nav_title': 'Mock Service Details',
         'service': service,
+        'host': service_path(request)
     }
     return render(request, 'dashboard/service_details.html', context)
 
@@ -613,6 +619,7 @@ def details_endpoint_view(request, endpoint_id):
     context = {
         'page_nav_title': 'Mock Endpoint Details',
         'endpoint': endpoint,
+        'host': service_path(request)
     }
     return render(request, 'dashboard/endpoint_details.html', context)
 

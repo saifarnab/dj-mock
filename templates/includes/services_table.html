@@ -1,6 +1,6 @@
 {% load static %}
 
-<table class="table">
+<table id="serviceTable" class="table">
     <thead>
     <tr>
         <th>Service</th>
@@ -16,7 +16,7 @@
     {% for service in services %}
     <tr>
         <td>{{ service.name }}</td>
-        <td>{{ service.base_path }}</td>
+        <td>{{ host }}/{{ service.base_path }}</td>
         <td>{{ service.created_at }}</td>
         <td>
             {% if service.is_active %}
@@ -46,3 +46,6 @@
     {% endfor %}
     </tbody>
 </table>
+
+
+

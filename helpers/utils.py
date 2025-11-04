@@ -1,4 +1,4 @@
-import time
+from django.conf import settings
 
 
 def json_value_by_key(data, target_key):
@@ -31,5 +31,5 @@ def xml_value_by_tag(element, target_tag):
     return None
 
 
-def demo():
-    time.sleep(1111)
+def service_path(request):
+    return f"{request.scheme}://{request.get_host()}/{settings.EXTERNAL_BASE_PREFIX}"

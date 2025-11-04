@@ -1,13 +1,13 @@
 import json
 import xml.etree.ElementTree as ET
-from rest_framework.views import APIView
-from rest_framework.response import Response
+
 from rest_framework import status
-from rest_framework_xml.parsers import XMLParser
 from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_xml.parsers import XMLParser
 
 from helpers import auth_utils, utils
-from helpers.utils import demo
 from .models import MockEndpoint, MockRule
 
 
@@ -24,10 +24,27 @@ class MockServiceView(APIView):
     @staticmethod
     def _invalid_path_response():
         err = {
-            "code": "IPR404",
+            "code": "DJ-MOCK-404",
             "message": "Invalid path, Check endpoints",
-            "lang": "en",
-            "data": {}
+            "lang": "en"
+        }
+        return Response(err, status=status.HTTP_404_NOT_FOUND)
+
+    @staticmethod
+    def _endpoint_inactive_response():
+        err = {
+            "code": "DJ-MOCK-400",
+            "message": "Endpoints is not active",
+            "lang": "en"
+        }
+        return Response(err, status=status.HTTP_404_NOT_FOUND)
+
+    @staticmethod
+    def _service_inactive_response():
+        err = {
+            "code": "DJ-MOCK-400",
+            "message": "Service is not active",
+            "lang": "en"
         }
         return Response(err, status=status.HTTP_404_NOT_FOUND)
 
@@ -42,6 +59,12 @@ class MockServiceView(APIView):
             )
         except MockEndpoint.DoesNotExist:
             return self._invalid_path_response()
+
+        # check endpoint & service status
+        if not endpoint.is_active:
+            return self._endpoint_inactive_response()
+        if not endpoint.service.is_active:
+            return self._service_inactive_response()
 
         # increase hit count
         MockEndpoint.objects.increase_hit_count(endpoint.id)

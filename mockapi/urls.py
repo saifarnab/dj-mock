@@ -6,11 +6,12 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
+from django.conf import settings
 
 urlpatterns = [
-    path("mock-api/i/admin/", admin.site.urls),
-    path("mock-api/e/account/", include('accounts.urls')),
-    path("mock-api/e/dashboard/", include('dashboard.urls')),
-    path("mock-api/e/", include('mocks.urls')),
+    path(f"{settings.INTERNAL_BASE_PREFIX}/admin/", admin.site.urls),
+    path(f"{settings.EXTERNAL_BASE_PREFIX}/account/", include('accounts.urls')),
+    path(f"{settings.EXTERNAL_BASE_PREFIX}/dashboard/", include('dashboard.urls')),
+    path(f"{settings.EXTERNAL_BASE_PREFIX}/", include('mocks.urls')),
 
 ]

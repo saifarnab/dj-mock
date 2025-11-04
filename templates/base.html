@@ -43,9 +43,24 @@
 <script src="{% static 'assets/js/settings.js' %}"></script>
 <script src="{% static 'assets/js/todolist.js' %}"></script>
 <script src="{% static 'assets/js/jquery.cookie.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <!-- endinject -->
 <!-- Custom js for this page -->
 <script src="{% static 'assets/js/dashboard.js' %}"></script>
+<script>
+$(document).ready(function() {
+    $('#serviceTable').DataTable({
+        "pageLength": 25,      // default rows per page
+        "lengthChange": true,  // user can change number of rows
+        "ordering": true,      // enables column sorting
+        "info": false,         // hides "Showing X of Y entries"
+        "language": {
+            "search": "Search:" // custom search placeholder
+        }
+    });
+});
+</script>
 <!-- End custom js for this page -->
 </body>
 </html>

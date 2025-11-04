@@ -1,15 +1,13 @@
 {% load static %}
 
-<table class="table">
+<table {%if tableSearch %}id="serviceTable"{% endif%} class="table">
     <thead>
     <tr>
         <th>Service Name</th>
-        <th>Service URL</th>
-        <th>Service Status</th>
         <th>Endpoint Name</th>
         <th>Endpoint URL</th>
-        <th>Created Date</th>
         <th>Total Hit</th>
+        <th>Service Status</th>
         <th>Endpoint Status</th>
         {% if edit or details %}
         <th>Action</th>
@@ -20,7 +18,9 @@
     {% for endpoint in endpoints %}
     <tr>
         <td>{{ endpoint.service.name }}</td>
-        <td>{{ endpoint.service.base_path }}</td>
+        <td>{{ endpoint.endpoint_name }}</td>
+        <td>{{ host }}/{{ endpoint.service.base_path }}/{{ endpoint.path }}</td>
+        <td>{{ endpoint.hit_count }}</td>
         <td>
             {% if endpoint.service.is_active %}
             <label class="badge badge-gradient-success">ACTIVE</label>
@@ -28,11 +28,6 @@
             <label class="badge badge-gradient-danger">INACTIVE</label>
             {% endif %}
         </td>
-
-        <td>{{ endpoint.endpoint_name }}</td>
-        <td>{{ endpoint.path }}</td>
-        <td>{{ endpoint.created_at }}</td>
-        <td>{{ endpoint.hit_count }}</td>
         <td>
             {% if endpoint.is_active %}
             <label class="badge badge-gradient-success">ACTIVE</label>

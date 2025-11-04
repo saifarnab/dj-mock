@@ -23,7 +23,7 @@
                     </div>
                     <div class="form-group">
                         <label for="endPoint">Endpoint</label>
-                        <input type="text" class="form-control" id="endPoint" value="{{endpoint.path}}" disabled>
+                        <input type="text" class="form-control" id="endPoint" value="{{ host }}/{{ endpoint.service.base_path }}/{{endpoint.path}}" disabled>
                     </div>
                     <div class="form-group">
                         <label for="httpMethod">HTTP Method</label>
