@@ -22,6 +22,11 @@
                                minlength="3" value="{{service.base_path}}" required>
                     </div>
                     <div class="form-group">
+                        <label for="note">Notes</label>
+                        <textarea class="form-control" id="note" name="note" rows="10"
+                                  placeholder="Notes">{{service.notes|default_if_none:""}}</textarea>
+                    </div>
+                    <div class="form-group">
                         <label for="status">Status</label>
                         <select class="form-select" id="status" name="status">
                             <option value="1" {% if service.is_active %}selected{% endif %}>Active</option>

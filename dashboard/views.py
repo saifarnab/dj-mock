@@ -54,6 +54,7 @@ def create_service_view(request):
         service_name = str(request.POST.get("serviceName")).strip()
         base_url = str(request.POST.get("baseUrl")).strip('/').strip()
         status_value = request.POST.get("status")
+        notes = request.POST.get("notes")
         status = True if status_value == "1" else False
 
         form_data = {
@@ -61,6 +62,7 @@ def create_service_view(request):
             "serviceName": service_name,
             "baseUrl": base_url,
             "status": status_value,
+            "notes": notes,
         }
 
         # check service name availability
@@ -73,7 +75,7 @@ def create_service_view(request):
             messages.error(request, "Base url already available")
             return render(request, 'dashboard/create_service.html', {"form_data": form_data})
 
-        new_service = MockService.objects.create_new_service(request.user, service_name, base_url, status)
+        new_service = MockService.objects.create_new_service(request.user, service_name, base_url, status, notes)
 
         context = {
             'page_nav_title': 'Mock Services',
@@ -101,6 +103,7 @@ def create_endpoint_view(request):
         default_http_status = request.POST.get("defaultHttpStatus").strip()
         default_response = request.POST.get("defaultResponse").strip()
         status_value = request.POST.get("status")
+        note = request.POST.get("note")
         status = True if status_value == "1" else False
 
         form_data = {
@@ -113,6 +116,7 @@ def create_endpoint_view(request):
             "authType": auth_type,
             "defaultHttpStatus": default_http_status,
             "defaultResponse": default_response,
+            "note": note,
             "status": status_value,
         }
 
@@ -130,7 +134,7 @@ def create_endpoint_view(request):
         # create new endpoint
         new_endpoint = MockEndpoint.objects.create_new_endpoint(service, end_point, http_method, auth_type,
                                                                 default_http_status, default_response, status,
-                                                                endpoint_name)
+                                                                endpoint_name, note)
 
         # get the endpoints
         endpoints = MockEndpoint.objects.get_service_endpoints(service.id)
@@ -157,8 +161,9 @@ def edit_service_view(request, service_id):
     if request.method == "POST":
         base_url = str(request.POST.get("baseUrl")).strip('/').strip()
         status_value = request.POST.get("status")
+        notes = request.POST.get("notes")
         status = True if status_value == "1" else False
-        MockService.objects.update_service(service_id, request.user, base_url, status)
+        MockService.objects.update_service(service_id, request.user, base_url, status, notes)
 
         # get the endpoints & services
         endpoints = MockEndpoint.objects.get_service_endpoints(service_id)
@@ -193,6 +198,7 @@ def edit_endpoint_view(request, endpoint_id):
         default_http_status = request.POST.get("defaultHttpStatus").strip()
         default_response = request.POST.get("defaultResponse").strip()
         status_value = request.POST.get("status")
+        note = request.POST.get("note")
         status = True if status_value == "1" else False
 
         form_data = {
@@ -218,7 +224,8 @@ def edit_endpoint_view(request, endpoint_id):
             return render(request, 'dashboard/edit_endpoint.html', form_data)
 
         MockEndpoint.objects.update_endpoint(endpoint.id, request.user, endpoint.service, end_point, http_method,
-                                             auth_type, default_http_status, default_response, status, endpoint_name)
+                                             auth_type, default_http_status, default_response, status, endpoint_name,
+                                             note)
 
         endpoints = MockEndpoint.objects.get_endpoints(request.user)
         context = {

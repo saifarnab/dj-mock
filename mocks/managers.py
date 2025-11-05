@@ -35,19 +35,19 @@ class MockEndpointManager(models.Manager):
             return self.filter(service__id=service_id, path=url).exists()
 
     def create_new_endpoint(self, service, end_point, http_method, auth_type, default_http_status, default_response,
-                            status, endpoint_name):
+                            status, endpoint_name, note):
         return self.create(service=service, path=end_point, method=http_method, default_http_status=default_http_status,
                            default_response=default_response, auth_type=auth_type, is_active=status,
-                           endpoint_name=endpoint_name)
+                           endpoint_name=endpoint_name, notes=note)
 
     def update_endpoint(self, end_point_id, user, service, end_point, http_method, auth_type, default_http_status,
-                        default_response, status, endpoint_name):
+                        default_response, status, endpoint_name, note):
         return self.filter(id=end_point_id, service__user=user).update(service=service, path=end_point,
                                                                        method=http_method,
                                                                        default_http_status=default_http_status,
                                                                        default_response=default_response,
                                                                        auth_type=auth_type, is_active=status,
-                                                                       endpoint_name=endpoint_name)
+                                                                       endpoint_name=endpoint_name, notes=note)
 
     def increase_hit_count(self, pk):
         return self.filter(pk=pk).update(hit_count=F('hit_count') + 1)
@@ -60,8 +60,8 @@ class MockServiceManager(models.Manager):
     def get_services_by_user(self, user):
         return self.filter(user=user).order_by('-created_at')
 
-    def create_new_service(self, user, name, url, is_active):
-        return self.create(user=user, name=name, base_path=url, is_active=is_active)
+    def create_new_service(self, user, name, url, is_active, notes):
+        return self.create(user=user, name=name, base_path=url, is_active=is_active, notes=notes)
 
     def check_service_by_name(self, name):
         return self.filter(name=name).exists()
@@ -75,8 +75,8 @@ class MockServiceManager(models.Manager):
     def get_service_without_user(self, service_id):
         return self.filter(id=service_id).last()
 
-    def update_service(self, service_id, user, base_path, status):
-        return self.filter(user=user, id=service_id).update(base_path=base_path, is_active=status)
+    def update_service(self, service_id, user, base_path, status, notes):
+        return self.filter(user=user, id=service_id).update(base_path=base_path, is_active=status, notes=notes)
 
 
 class BasicAuthConfigManager(models.Manager):

@@ -11,14 +11,6 @@
                 <p class="card-description"></p>
                 <form class="forms-sample" action="{% url 'edit_endpoint' endpoint.id %}" method="post">
                     {% csrf_token %}
-<!--                    <div class="form-group">-->
-<!--                        <label for="serviceID">Service</label>-->
-<!--                        <select class="form-select" id="serviceID" name="serviceID" required>-->
-<!--                            {% for service in services %}-->
-<!--                            <option value="{{ service.id }}" {% if service.id == endpoint.service.id %}selected{% endif %}>{{ service.name }}</option>-->
-<!--                            {% endfor %}-->
-<!--                        </select>-->
-<!--                    </div>-->
 
                     <div class="form-group">
                         <label for="service">Service</label>
@@ -77,6 +69,11 @@
                         <label for="default_response">Default JSON Response</label>
                         <textarea class="form-control" id="default_response" name="defaultResponse" rows="10"
                                   placeholder="Enter default JSON response">{{endpoint.default_response}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Notes</label>
+                        <textarea class="form-control" id="note" name="note" rows="10"
+                                  placeholder="Notes">{{endpoint.notes|default_if_none:""}}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="status">Status</label>
