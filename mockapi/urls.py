@@ -7,6 +7,7 @@ from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
 from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path(f"{settings.INTERNAL_BASE_PREFIX}/admin/", admin.site.urls),
@@ -15,3 +16,5 @@ urlpatterns = [
     path(f"{settings.EXTERNAL_BASE_PREFIX}/", include('mocks.urls')),
 
 ]
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
