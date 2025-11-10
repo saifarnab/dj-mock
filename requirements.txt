@@ -3,3 +3,4 @@ Django==5.2.6
 djangorestframework==3.16.1
 jwt==1.4.0
 django-extensions==4.1
+gunicorn==23.0.0
